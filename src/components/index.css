@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@theme {
+  --color-AppRed: #ec190e;
+  --color-AppWhite: #eee;
+  --color-AppBlack: #444;
+  --color-AppGray: #aaa;
+}
+
+.roboto-font {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "width" 100;
+}
+
+.ubuntu-sans-mono-font {
+  font-family: "Ubuntu Sans Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "width" 100;
+}
+
+.container {
+  @apply max-w-[95%]  mx-auto;
+}
+
+h4 {
+  @apply text-2xl text-AppBlack uppercase text-center font-bold;
+}
+h5 {
+  @apply text-2xl  uppercase text-center font-bold;
+}
+.field {
+  @apply flex flex-col;
+}
+input {
+  @apply p-2 border-2 border-dotted outline-0 rounded-2xl;
+}
+input::placeholder {
+  @apply capitalize text-AppBlack;
+}
+.field label {
+  @apply capitalize font-bold text-AppBlack py-1;
+}
+label {
+  @apply font-bold capitalize;
+}
+.polygons {
+  @apply [clip-path:polygon(0%_0%,70%_0%,_100%_30%,_100%_100%,_0%_100%)];
+}
+.pry-btn {
+  @apply bg-AppRed text-AppWhite text-[12px] rounded-xl text-center capitalize py-2 relative w-max h-max px-6 flex items-center justify-center  text-xl;
+}
+.sec-btn {
+  @apply bg-black  text-AppWhite hover:text-black rounded-xl text-center text-[12px] capitalize w-max h-max px-6 py-2 flex items-center justify-center relative;
+}
+.sec-btn::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-AppRed);
+  color: white;
+  border-radius: 16px;
+}
+.sec-btn:hover::before {
+  position: absolute;
+  content: "sign up";
+  height: 100%;
+  width: 100%;
+  background: var(--color-AppRed);
+  color: white;
+  border-radius: 16px;
+  transition: 0.2s ease-in;
+}
+
+.pry-btn::before {
+  position: absolute;
+  content: "";
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-AppBlack);
+  color: white;
+  border-radius: 16px;
+}
+.pry-btn:hover::before {
+  position: absolute;
+  content: "sign in";
+  height: 100%;
+  width: 100%;
+  background: var(--color-AppBlack);
+  color: white;
+  border-radius: 16px;
+  transition: 0.2s ease-in;
+}
+.conditions span {
+  @apply flex items-center text-green-600;
+}
+.background_anim {
+  @apply h-[50vh] lg:h-[80vh] w-full bg-no-repeat bg-center bg-cover;
+  animation: slideRight 5s infinite;
+}
+/* @keyframes slideRight {
+  from{transform: translateX(10%);}
+  to{transform: translateX(-10%);}
+} */
+
+.overview-card {
+  @apply bg-AppBlack/55 border-2 border-AppGray  w-[250px] h-[200px] p-10 rounded-xl flex flex-col items-center gap-4;
+}
+.overview-cards {
+  @apply bg-AppWhite border-2 border-AppRed  w-[250px] h-[200px] p-10 rounded-xl flex flex-col items-center gap-4;
+}
+.mealAnim {
+  animation: alternate_scroll 6s infinite;
+}
+@keyframes alternate_scroll {
+  0% {
+    transform: translateX(-10%);
+  }
+  50% {
+    transform: translateX(10%);
+  }
+  75% {
+    transform: translateX(10%);
+  }
+  100% {
+    transform: translateX(-10%);
+  }
+}
