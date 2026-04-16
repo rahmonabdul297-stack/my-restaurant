@@ -10,19 +10,17 @@ const AdminUsers = () => {
   return (
     <div className="py-20 flex items-center justify-center  h-screen w-full">
       <section>
-        {data ? (
+        {loading ? (
+          <Apploader />
+        ) : error ? (
+          <AppError error={error} />
+        ) :data? (
           data.map((users) => (
             <ol key={users.user_id}>
               <li>{users.first_name}</li>
             </ol>
           ))
-        ) : loading ? (
-          <Apploader />
-        ) : error ? (
-          <AppError error={error} />
-        ) : (
-          "no user!"
-        )}
+        ):"No users found!" }
       </section>
     </div>
   );

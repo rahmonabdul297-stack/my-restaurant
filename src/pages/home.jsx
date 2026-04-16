@@ -31,6 +31,11 @@ const HomePage = () => {
   ChangingImage();
 
   const { data, error, loading } = useFetch(url);
+  const foods = Array.isArray(data?.food_items)
+    ? data.food_items
+    : Array.isArray(data)
+      ? data
+      : [];
   return (
     <div className={`pt-16 bg-[url("/images/egusi.jpg")]   w-full bg-cover bg-no-repeat bg-center bg-fixed `}>
       <section className={`${dark ? "bg-AppGray" : "bg-AppWhite"} pb-10`}>
@@ -81,21 +86,27 @@ const HomePage = () => {
         </div>
 
       
-          <section className="container py-10 flex flex-col lg:flex-row justify-between gap-10 items-center font-bold text-xl capitalize text-center mealAnim">
-          {Array.isArray(data) ? (
-            data.map((food) => (
-              <div key={food.id}>
-                <img src={food.food_image} alt="" srcset="" />
-                {food.name}
-              </div>
-            ))
+          <section className="container py-10 flex flex-col lg:flex-row justify-between gap-10 items-center font-bold text-xl capitalize text-center ">
+          {loading ? (
+            <Apploader />
           ) : error ? (
             <AppError error={error} />
-          ) : loading ? (
-            <Apploader  />
+          ) : foods.length ? (
+            foods.map((food, idx) => (
+              <div key={food.id || food.food_id || idx} className="">
+                <img
+                  src={food.food_image || "/images/Jollof.jpg"}
+                  alt={food.name || "meal image"}
+                  className="h-60 w-full object-cover"
+                />
+                <div className={`${dark ? "bg-AppBlack" : "bg-AppRed"} text-AppWhite py-1`}>
+                  {food.name || "Unnamed meal"}
+                </div>
+              </div>
+            ))
           ) : (
             ourMeal.map((meal) => (
-              <div key={meal.id} className="w-[600px]">
+              <div key={meal.id} className="">
                 <img src={meal.img} alt="image" className="h-60 w-full" />
                 <div className={`${dark ? "bg-AppBlack" : "bg-AppRed"} text-AppWhite`}>
                   {meal.name}
