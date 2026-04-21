@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   errorNotification,
   infoNotification,
   successNotification,
 } from "../utils/helper";
+import { ThemeContext } from "../context/context";
 
 const MENU_POST_URL = "https://restaurant-management-f9kx.onrender.com/api/v1/menu";
 const MENUS_URL = "https://restaurant-management-f9kx.onrender.com/api/v1/menus";
 
 const AdminMenu = () => {
+  const { dark } = useContext(ThemeContext);
   const [isCreating, setIsCreating] = useState(false);
   const [isLoadingMenus, setIsLoadingMenus] = useState(false);
   const [warning, setWarning] = useState("");
@@ -99,7 +101,9 @@ const AdminMenu = () => {
   };
 
   return (
-    <div className="py-20 min-h-screen">
+    <div
+      className={`min-h-screen py-20 `}
+    >
       <section className="px-10 py-20 ml-20 lg:ml-52 flex flex-col lg:grid grid-cols-4 gap-5">
         <h4 className="col-span-4">Create Menu IDs For Food Posting</h4>
 
@@ -131,7 +135,7 @@ const AdminMenu = () => {
           <label>Menu ID (optional)</label>
           <input
             type="text"
-            placeholder="Leave empty to let backend generate"
+            placeholder="Leave empty to generate automatically"
             className="w-full"
             value={menuForm.menu_id}
             onChange={(e) => setMenuForm({ ...menuForm, menu_id: e.target.value })}
@@ -160,7 +164,7 @@ const AdminMenu = () => {
             </button>
           </div>
           {!menus.length ? (
-            <div className="mt-4 text-AppBlack/70 text-sm">
+            <div className={`mt-4 text-sm ${dark ? "text-AppGray" : "text-AppBlack/70"}`}>
               No menus yet. Create one above and it will appear here.
             </div>
           ) : (
@@ -170,10 +174,14 @@ const AdminMenu = () => {
                 return (
                   <div
                     key={menuId || idx}
-                    className="border border-AppBlack/15 rounded-xl p-3 bg-AppWhite"
+                    className={`rounded-xl p-3 border ${
+                      dark
+                        ? "border-AppGray/40 bg-AppBlack/40"
+                        : "border-AppBlack/15 bg-AppWhite"
+                    }`}
                   >
                     <div className="font-bold">{menu.name || "Unnamed menu"}</div>
-                    <div className="text-sm text-AppBlack/70">
+                    <div className={`text-sm ${dark ? "text-AppGray" : "text-AppBlack/70"}`}>
                       Category: {menu.category || "-"}
                     </div>
                     <div className="text-sm break-all mt-1">menu_id: {menuId || "-"}</div>

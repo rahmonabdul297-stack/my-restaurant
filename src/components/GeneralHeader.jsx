@@ -5,6 +5,7 @@ import { navsArr } from "./Arrays";
 import { useContext, useState } from "react";
 import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { ThemeContext } from "../context/context";
+import { clearSession } from "../utils/authSession";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { IoIosContact } from "react-icons/io";
 import { IoSettings } from "react-icons/io5";
@@ -23,10 +24,13 @@ export const GeneralHeader = () => {
     setdrop,
     email,
     setemail,
+    setLastName,
   } = useContext(ThemeContext);
   const handleLogout = () => {
+    clearSession();
     setFirstName("");
     setemail("");
+    setLastName("");
   };
   const handleMenuDrop = () => {
     setShowMenu((prev) => !prev);
@@ -57,9 +61,9 @@ export const GeneralHeader = () => {
           ))}
 
           <div className="flex items-center gap-2.5">
-            {first_name ? (
+            {first_name || email ? (
               <i className="text-[12px] font-serif">
-                welcome, {first_name?.slice(0, 11)}!
+                welcome, {first_name || email?.slice(0, 11)}!
               </i>
             ) : (
               <Link to="/signup" className="sec-btn rounded font-bold border">
@@ -115,7 +119,7 @@ export const GeneralHeader = () => {
               )}
             </div>
             <Link to="/adminlogin">sign-in as admin</Link>
-            <div className="  p-2" onClick={() => setDark((prev) => !prev)}>
+            <div className="  p-2" onClick={()=>setDark((prev) => !prev)}>
               {dark ? (
                 <span className="flex items-center">
                   {" "}
@@ -129,7 +133,7 @@ export const GeneralHeader = () => {
               )}
             </div>
             <div className="text-AppRed px-2" onClick={handleLogout}>
-              {first_name ? "log out" : ""}
+              {first_name || email ? "log out" : ""}
             </div>
           </div>
         </div>
@@ -232,7 +236,7 @@ export const GeneralHeader = () => {
           <div
             className="capitalize font-bold text-2xl hover:border-AppRed border-b py-3"
             onClick={() => {
-              setDark((prev) => !prev);
+             setDark((prev) => !prev);
               handleMenuDrop();
             }}
           >

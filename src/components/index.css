@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+/* Manual dark mode: `<html class="dark">` set from ThemeContext */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-AppRed: #ec190e;
   --color-AppWhite: #eee;
@@ -35,7 +39,7 @@ h5 {
 .field {
   @apply flex flex-col;
 }
-input {
+input,select,textarea {
   @apply p-2 border-2 border-dotted outline-0 rounded-2xl;
 }
 input::placeholder {
@@ -123,6 +127,35 @@ label {
 .overview-cards {
   @apply bg-AppWhite border-2 border-AppRed  w-[250px] h-[200px] p-10 rounded-xl flex flex-col items-center gap-4;
 }
+/* Dark theme: driven by `document.documentElement.dataset.theme` from ThemeContext */
+html[data-theme="dark"] h4 {
+  @apply text-AppWhite;
+}
+html[data-theme="dark"] h5 {
+  @apply text-AppWhite;
+}
+html[data-theme="dark"] label,
+html[data-theme="dark"] .field label {
+  @apply text-AppWhite;
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  @apply border-AppGray bg-AppBlack/50 text-AppWhite;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  @apply text-AppGray;
+}
+
+html[data-theme="light"] body {
+  @apply bg-AppWhite text-AppBlack;
+}
+
+html[data-theme="dark"] body {
+  @apply bg-AppGray text-AppWhite;
+}
+
 .mealAnim {
   animation: alternate_scroll 6s infinite;
 }
@@ -138,5 +171,227 @@ label {
   }
   100% {
     transform: translateX(-10%);
+  }
+}
+
+/* —— Home page: high-energy motion (respects reduced motion) —— */
+@keyframes homeKenBurns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.12) translate(-1.5%, -1%);
+  }
+}
+
+@keyframes homeGlitchTitle {
+  0%,
+  86%,
+  100% {
+    transform: skewX(0deg) translate(0, 0);
+    text-shadow:
+      0.06em 0 0 #ec190e,
+      -0.04em 0 0 #eee;
+    filter: hue-rotate(0deg);
+  }
+  88% {
+    transform: skewX(-4deg) translate(-3px, 1px);
+    text-shadow:
+      0.12em 0 0 #ec190e,
+      -0.08em 0 0 #444;
+    filter: hue-rotate(12deg);
+  }
+  90% {
+    transform: skewX(3deg) translate(4px, -2px);
+    text-shadow:
+      -0.06em 0 0 #ec190e,
+      0.1em 0 0 #eee;
+  }
+  92% {
+    transform: skewX(0deg) translate(0, 0);
+  }
+}
+
+@keyframes homeOrbDrift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
+  33% {
+    transform: translate(8%, -12%) scale(1.15);
+    opacity: 0.55;
+  }
+  66% {
+    transform: translate(-10%, 6%) scale(0.92);
+    opacity: 0.45;
+  }
+}
+
+@keyframes homeOrbDriftReverse {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1.05);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translate(-12%, 10%) scale(1.2);
+    opacity: 0.5;
+  }
+}
+
+@keyframes homeScanSweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.12;
+  }
+  40% {
+    opacity: 0.22;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0.08;
+  }
+}
+
+@keyframes homeBorderPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(236, 25, 14, 0.45),
+      0 0 24px rgba(236, 25, 14, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 0 10px rgba(236, 25, 14, 0),
+      0 0 40px rgba(236, 25, 14, 0.35);
+  }
+}
+
+@keyframes homeMealPop {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) rotate(-2deg) scale(0.92);
+  }
+  70% {
+    transform: translateY(-4px) rotate(0.5deg) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes homeTitleShake {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-0.8deg) scale(1.02);
+  }
+  75% {
+    transform: rotate(0.8deg) scale(1.02);
+  }
+}
+
+@keyframes homeFloatDots {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.home-hero-ken {
+  animation: homeKenBurns 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.home-hero-title {
+  animation: homeGlitchTitle 4.5s ease-in-out infinite;
+}
+
+.home-orb-a {
+  animation: homeOrbDrift 14s ease-in-out infinite;
+}
+
+.home-orb-b {
+  animation: homeOrbDriftReverse 18s ease-in-out infinite;
+}
+
+.home-hero-scan {
+  animation: homeScanSweep 6s linear infinite;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(238, 238, 238, 0.12),
+    transparent
+  );
+}
+
+.home-about-pulse {
+  animation: homeBorderPulse 2.8s ease-in-out infinite;
+}
+
+.home-meals-head {
+  animation: homeTitleShake 3.2s ease-in-out infinite;
+}
+
+.home-meal-card {
+  animation: homeMealPop 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.home-meal-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.home-meal-card:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.home-meal-card:nth-child(3) {
+  animation-delay: 0.19s;
+}
+.home-meal-card:nth-child(4) {
+  animation-delay: 0.26s;
+}
+.home-meal-card:nth-child(5) {
+  animation-delay: 0.33s;
+}
+.home-meal-card:nth-child(6) {
+  animation-delay: 0.4s;
+}
+.home-meal-card:nth-child(7) {
+  animation-delay: 0.47s;
+}
+.home-meal-card:nth-child(8) {
+  animation-delay: 0.54s;
+}
+
+.home-dots-row > * {
+  animation: homeFloatDots 2.4s ease-in-out infinite;
+}
+.home-dots-row > *:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.home-dots-row > *:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.home-dots-row > *:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-ken,
+  .home-hero-title,
+  .home-orb-a,
+  .home-orb-b,
+  .home-hero-scan,
+  .home-about-pulse,
+  .home-meals-head,
+  .home-meal-card,
+  .home-dots-row > * {
+    animation: none !important;
   }
 }

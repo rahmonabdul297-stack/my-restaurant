@@ -11,9 +11,9 @@ export const infoNotification=(message)=>{
 }
 
 export const currencyFormatter = (amount) => {
-  const fmt = new Intl.NumberFormat("en", {
+  const fmt = new Intl.NumberFormat("NGN", {
     style: "currency",
-    currency: "USD",
+    currency: "NGN",
     minimumFractionDigits: 2,
     maximumFractionDigits: 5,
   });

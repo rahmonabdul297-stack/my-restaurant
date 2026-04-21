@@ -94,7 +94,11 @@ const Signup = () => {
     <div className="container py-10 lg:py-0">
       <form
         action=""
-        className={`${dark ? "bg-AppWhite" : "bg-AppWhite "} h-max  mx-auto flex flex-col gap-5 py-10 px-5 border-2 rounded-2xl my-10`}
+        className={`h-max mx-auto flex flex-col gap-5 py-10 px-5 border-2 rounded-2xl my-10 ${
+          dark
+            ? "border-AppGray bg-AppBlack/60"
+            : "border-AppBlack/10 bg-AppWhite"
+        }`}
       >
         <h4>create an account</h4>
         <div className="field">
@@ -209,7 +213,7 @@ const Signup = () => {
         <div className="capitalize">
           {" "}
           Already have an account ?{" "}
-          <Link to="/signin" className="text-AppRed ">
+          <Link to="/signin" className="text-blue-700 ">
             sign in
           </Link>
         </div>
