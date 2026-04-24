@@ -11,6 +11,7 @@ import { IoIosContact } from "react-icons/io";
 import { IoSettings } from "react-icons/io5";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { GoTriangleDown } from "react-icons/go";
+import { FaSignInAlt } from "react-icons/fa";
 export const GeneralHeader = () => {
   const [Selected, setSelected] = useState();
   const [ShowMenu, setShowMenu] = useState(false);
@@ -97,7 +98,7 @@ export const GeneralHeader = () => {
           <div
             className={
               drop
-                ? `${dark ? "bg-AppBlack" : "bg-AppWhite"} w-max h-max p-4 fixed top-12 right-0 flex flex-col `
+                ? `${dark ? "bg-AppBlack flex" : "bg-AppWhite"} w-[200px] h-max p-4 fixed top-16 right-0 flex flex-col items-center gap-1.5 border-l-AppBlack border-l-2`
                 : "hidden"
             }
           >
@@ -118,16 +119,16 @@ export const GeneralHeader = () => {
                 ""
               )}
             </div>
-            <Link to="/adminlogin">sign-in as admin</Link>
-            <div className="  p-2" onClick={()=>setDark((prev) => !prev)}>
+            <Link to="/adminlogin" className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray rounded-lg"><FaSignInAlt /><span>sign-in as admin</span></Link>
+            <div className="px-1 py-1  w-full hover:bg-AppGray rounded-lg" onClick={()=>setDark((prev) => !prev)}>
               {dark ? (
-                <span className="flex items-center">
+                <span className="w-full flex items-center gap-2">
                   {" "}
                   <MdLightMode />
                   Light Mode
                 </span>
               ) : (
-                <span className="flex items-center">
+                <span className="w-full flex items-center gap-2">
                   <MdDarkMode /> Dark Mode
                 </span>
               )}

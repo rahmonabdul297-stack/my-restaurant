@@ -9,7 +9,7 @@ import { CiLight } from "react-icons/ci";
 import { MdLightMode, MdNightlightRound } from "react-icons/md";
 
 const AdminLayout = () => {
-  const { dark, setDark } = useContext(ThemeContext);
+  const { dark, setDark,email } = useContext(ThemeContext);
   const [AdminMenu, setAdminMenu] = useState(false);
   return (
     <div>
@@ -55,7 +55,7 @@ const AdminLayout = () => {
           <div className="mt-96 lg:mt-40 flex items-center  gap-5">
             <IoMdContact size={30} />
             <div className={AdminMenu ?"flex flex-col":"hidden"}>
-              <div className="font-bold text-xl">Abdulrahmon</div>
+              <div className="font-bold text-xl">{email?email.slice(0,14):"unknown user"}</div>
               <div className="capitalize text-sm">Administrator</div>
             </div>
             <TfiAngleRight className={AdminMenu ?"":"hidden"}/>

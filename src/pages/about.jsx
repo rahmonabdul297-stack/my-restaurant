@@ -35,7 +35,7 @@ const AboutPage = () => {
       <section className="relative flex flex-col lg:flex-row min-h-[72vh]">
         <div
           className={`relative z-[1] flex flex-1 flex-col justify-center gap-8 px-8 py-16 lg:py-24 lg:pl-16 lg:pr-12 ${
-            dark ? "bg-AppBlack" : "bg-AppBlack"
+            dark ? "bg-AppBlack" : "bg-AppWhite text-AppBlack"
           } text-AppWhite`}
         >
           <div
@@ -45,11 +45,15 @@ const AboutPage = () => {
           <p className="text-xs font-bold uppercase tracking-[0.35em] text-AppRed">
             Our story
           </p>
-          <h1 className="max-w-xl font-black leading-[1.05] text-4xl sm:text-5xl lg:text-6xl">
-            A kitchen built on{" "}
-            <span className="text-AppRed">curiosity</span>, not templates.
+          <h1
+            className={`max-w-xl font-black leading-[1.05] text-4xl sm:text-5xl lg:text-6xl ${dark ? "text-AppWhite" : "text-AppBlack"}`}
+          >
+            A kitchen built on <span className="text-AppRed">curiosity</span>,
+            not templates.
           </h1>
-          <p className="max-w-md text-sm leading-relaxed text-AppWhite/85 sm:text-base">
+          <p
+            className={`max-w-md text-sm leading-relaxed ${dark ? "text-AppWhite/85" : " text-AppBlack"} sm:text-base`}
+          >
             We chase the small details—how smoke curls off the grill, how citrus
             snaps against heat—so every visit feels like the first bite of
             something new.
@@ -63,7 +67,7 @@ const AboutPage = () => {
             </Link>
             <Link
               to="/team"
-              className={`rounded-xl border-2 border-AppWhite/40 px-6 py-3 text-center text-sm font-bold uppercase tracking-wide text-AppWhite transition hover:border-AppRed hover:text-AppRed`}
+              className={`rounded-xl border-2 ${dark?"border-AppWhite/40 text-AppWhite ":"border-AppRed text-AppBlack"} px-6 py-3 text-center text-sm font-bold uppercase tracking-wide transition`}
             >
               Meet the team
             </Link>
@@ -112,7 +116,9 @@ const AboutPage = () => {
       {/* Stats strip */}
       <section
         className={`border-y ${
-          dark ? "border-AppBlack bg-AppBlack" : "border-AppBlack/10 bg-AppWhite"
+          dark
+            ? "border-AppBlack bg-AppBlack"
+            : "border-AppBlack/10 bg-AppWhite"
         }`}
       >
         <div className="container grid grid-cols-2 gap-8 py-14 md:grid-cols-4 md:gap-4">
@@ -208,16 +214,20 @@ const AboutPage = () => {
           className={`rounded-2xl px-8 py-12 text-center md:px-16 ${
             dark
               ? "bg-AppBlack text-AppWhite ring-2 ring-AppRed/50"
-              : "bg-AppBlack text-AppWhite ring-2 ring-AppRed"
+              : "bg-AppGray text-AppWhite ring-2 ring-AppRed"
           }`}
         >
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-AppRed">
             Ready when you are
           </p>
-          <h3 className="mt-4 font-black text-2xl md:text-3xl">
+          <h3
+            className={`mt-4 font-black text-2xl md:text-3xl ${dark ? "text-AppWhite" : "text-AppBlack"}`}
+          >
             Pull up a chair—your table is waiting.
           </h3>
-          <p className="mx-auto mt-3 max-w-lg text-sm text-AppGray">
+          <p
+            className={`mx-auto mt-3 max-w-lg text-sm ${dark ? "text-AppGray" : " text-AppBlack"}`}
+          >
             Same palette you know from the site: deep charcoal, warm gray, and
             that signal red for moments that matter.
           </p>
