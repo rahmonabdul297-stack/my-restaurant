@@ -116,17 +116,15 @@ const AdminUsers = () => {
       }`}
     >
       <section className="w-full max-w-lg px-6 text-center capitalize">
-      <h2
-              className={
-                dark
-                  ? "mb-6 text-2xl font-black text-AppWhite"
-                  : "mb-6 text-2xl font-black text-AppRed"
-              }
-            >
-              Total users: {totalUsers}
-            </h2>
-
-      
+        <h2
+          className={
+            dark
+              ? "mb-6 text-2xl font-black text-AppWhite"
+              : "mb-6 text-2xl font-black text-AppRed"
+          }
+        >
+          Total users: {totalUsers}
+        </h2>
 
         {loading ? (
           <Apploader />
@@ -134,7 +132,9 @@ const AdminUsers = () => {
           <>
             {loadError ? (
               <div className={bannerClass} role="alert">
-                <p className="mb-3 font-medium normal-case text-center">{loadError}</p>
+                <p className="mb-3 font-medium normal-case text-center">
+                  {loadError}
+                </p>
 
                 <button
                   type="button"
@@ -149,8 +149,6 @@ const AdminUsers = () => {
                 </button>
               </div>
             ) : null}
-
-           
 
             {totalUsers > 0 ? (
               <ol className="mx-auto max-w-md list-inside list-decimal text-left">

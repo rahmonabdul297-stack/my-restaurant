@@ -8,10 +8,12 @@ import { ourMeal } from "../components/Arrays";
 import { Link } from "react-router";
 import { currencyFormatter } from "../utils/helper";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { NotesList } from "./Note";
 
 const HomePage = () => {
   const { dark } = useContext(ThemeContext);
   const url = "https://restaurant-management-f9kx.onrender.com/api/v1/foods";
+
   const [Food, setFood] = useState(0);
   /** Mobile "Our Meals" carousel index */
   const [mobileMealIndex, setMobileMealIndex] = useState(0);
@@ -64,8 +66,7 @@ const HomePage = () => {
       ? displayMeals[Math.min(mobileMealIndex, mobileMealCount - 1)]
       : null;
 
-  const goMobilePrev = () =>
-    setMobileMealIndex((i) => Math.max(0, i - 1));
+  const goMobilePrev = () => setMobileMealIndex((i) => Math.max(0, i - 1));
   const goMobileNext = () =>
     setMobileMealIndex((i) => {
       const max = Math.max(0, mobileMealCount - 1);
@@ -147,17 +148,7 @@ const HomePage = () => {
           about us
         </h5>
         <div className="container text-center">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti
-          maxime voluptas consequatur? Quidem blanditiis dolor quaerat
-          consequatur tempora nulla excepturi nihil accusantium veniam
-          perspiciatis, beatae accusamus cupiditate ullam mollitia in! Lorem
-          ipsum dolor sit amet consectetur adipisicing elit. Ullam assumenda
-          accusamus aut ipsa tenetur? Quasi exercitationem et deserunt ullam
-          dolores, debitis impedit iusto neque. Veritatis culpa doloribus quo,
-          facilis nam perspiciatis placeat est assumenda. Ut beatae, et,
-          possimus magni repudiandae repellendus hic nam ullam laboriosam
-          excepturi minus fugiat ex sequi animi sed provident maiores qui cum
-          eaque, ducimus molestiae. Optio.
+          <NotesList />
         </div>
         <div className="flex justify-end p-5">
           <Link
@@ -180,14 +171,13 @@ const HomePage = () => {
 
         <section className="container hidden lg:grid grid-cols-4 gap-3 py-10 text-center text-xl font-bold capitalize ">
           {loading ? (
-           <div className="col-span-4">
-            <Apploader />
-           </div> 
+            <div className="col-span-4">
+              <Apploader />
+            </div>
           ) : error ? (
-              <div className="col-span-4">
-      <AppError error={error} />
-              </div>
-      
+            <div className="col-span-4">
+              <AppError error={error} />
+            </div>
           ) : foods.length ? (
             foods.map((food, idx) => (
               <div
@@ -277,10 +267,7 @@ const HomePage = () => {
 
                   <div className="min-w-0 flex-1">
                     <img
-                      src={
-                        currentMobileMeal.food_image ||
-                        "/images/Jollof.jpg"
-                      }
+                      src={currentMobileMeal.food_image || "/images/Jollof.jpg"}
                       alt={currentMobileMeal.name || "Meal"}
                       className="h-56 w-full object-cover"
                     />

@@ -6,17 +6,18 @@ import {
   infoNotification,
   successNotification,
 } from "../utils/helper";
-import {
-  normalizeLoginResponse,
-  saveSession,
-} from "../utils/authSession";
+import { normalizeLoginResponse, saveSession } from "../utils/authSession";
 
-const USER_LOGIN_URL ="https://jsonplaceholder.typicode.com/posts";
-// "https://restaurant-management-f9kx.onrender.com/api/v1/user-login"
+const USER_LOGIN_URL =
+  "https://restaurant-management-f9kx.onrender.com/api/v1/user-login";
 
 const Signin = () => {
-  const { dark, setFirstName, setemail: setUserEmail, setLastName } =
-    useContext(ThemeContext);
+  const {
+    dark,
+    setFirstName,
+    setemail: setUserEmail,
+    setLastName,
+  } = useContext(ThemeContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,10 +29,7 @@ const Signin = () => {
   const handlesignin = async (e) => {
     e.preventDefault();
     const trimmedEmail = email.trim();
-    const isValid =
-      trimmedEmail &&
-      password &&
-      trimmedEmail.includes("@");
+    const isValid = trimmedEmail && password && trimmedEmail.includes("@");
 
     if (!isValid) {
       setWarning(
@@ -69,10 +67,7 @@ const Signin = () => {
           ? {
               ...profile,
               email: profile.email || trimmedEmail,
-              first_name:
-                profile.first_name ||
-                firstNameFromSignup ||
-                "",
+              first_name: profile.first_name || firstNameFromSignup || "",
             }
           : {
               token: "",
@@ -99,8 +94,7 @@ const Signin = () => {
         });
       } else {
         const msg =
-          (data && (data.error || data.message)) ||
-          `Login failed try again`;
+          (data && (data.error || data.message)) || `Login failed try again`;
         errorNotification(msg);
       }
     } catch (err) {

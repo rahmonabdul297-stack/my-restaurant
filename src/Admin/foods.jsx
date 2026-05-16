@@ -6,6 +6,7 @@ import {
 } from "../utils/helper";
 import { ThemeContext } from "../context/context";
 import { loadSession } from "../utils/authSession";
+import useFetch from "../hooks/useFetch";
 
 const FOOD_POST_URL =
   "https://restaurant-management-f9kx.onrender.com/api/v1/food";
@@ -55,7 +56,9 @@ const Foods = () => {
     menu_id: "",
     name: "",
     price: "",
+    food_id: "",
   });
+  const [Fieldwarning,setFieldwarning]=useState("")
 
   const [foodsList, setFoodsList] = useState([]);
   const [isLoadingFoods, setIsLoadingFoods] = useState(false);
@@ -145,13 +148,18 @@ const Foods = () => {
     const rawCreated =
       item.created_at ?? item.createdAt ?? item.Created_at ?? "";
     const createdAtSnapshot =
-      rawCreated !== null && rawCreated !== undefined && String(rawCreated).trim() !== ""
+      rawCreated !== null &&
+      rawCreated !== undefined &&
+      String(rawCreated).trim() !== ""
         ? String(rawCreated).trim()
         : "";
     setUpdateFood({
       food_id: String(item.food_id ?? item.id ?? ""),
       name: String(item.name ?? ""),
-      price: item.price !== undefined && item.price !== null ? String(item.price) : "",
+      price:
+        item.price !== undefined && item.price !== null
+          ? String(item.price)
+          : "",
       menu_id: String(item.menu_id ?? ""),
       food_image: null,
       existingFoodImage: img,
@@ -198,8 +206,7 @@ const Foods = () => {
     try {
       const nowIso = new Date().toISOString();
       const id = updateFood.food_id.trim();
-      const createdAt =
-        updateFood.createdAtSnapshot?.trim() || nowIso;
+      const createdAt = updateFood.createdAtSnapshot?.trim() || nowIso;
 
       const session = loadSession();
       const token = session?.token?.trim();
@@ -246,10 +253,7 @@ const Foods = () => {
       });
       let data = await parseResponse(request);
 
-      if (
-        !request.ok &&
-        shouldTryAlternateMethod(request.status)
-      ) {
+      if (!request.ok && shouldTryAlternateMethod(request.status)) {
         const putRes = await fetch(foodItemUrl(id), {
           method: "PUT",
           headers: jsonHeaders,
@@ -261,7 +265,7 @@ const Foods = () => {
           data = putData;
         } else if (shouldTryAlternateMethod(putRes.status)) {
           const patchRes = await fetch(FOOD_POST_URL, {
-            method: "PATCH",
+            method: "PUT",
             headers: jsonHeaders,
             body: JSON.stringify({ food_id: id, ...putBody }),
           });
@@ -382,42 +386,32 @@ const Foods = () => {
       setisPosting(false);
     }
   };
+
+  const {data,error,loading}=useFetch(FOODS_URL)
   const handleFoodDeleting = async () => {
     setisDeleting(true);
-    const isValid = food_id && food_image && menu_id && name && price;
-    if (isValid) {
-      const payload = {
-        food_id,
-        food_image,
-        menu_id,
-        name,
-        price: Number(price),
-      };
-      const request = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
+
+    if (postFood.food_id) {
+      const request = await fetch(
+        `https://restaurant-management-f9kx.onrender.com/api/v1/food-delete/${postFood.food_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // body: JSON.stringify(menu_id)
         },
-        body: JSON.stringify(payload),
-      });
+      );
       const response = await request.json();
       console.log("response", response);
-      console.log(
-        "data",
-
-        food_id,
-        food_image,
-        menu_id,
-        name,
-        price,
-      );
-      if (request.ok && request.status.toString().includes("20")) {
+      console.log("food_id:", postFood.food_id);
+      if (request.ok) {
         successNotification("successful");
       } else {
         errorNotification("something when wrong!");
       }
     } else {
-      setwarning("field required!");
+      setFieldwarning("Food ID is required!");
       infoNotification("follow the instruction and try again!");
     }
     setisDeleting(false);
@@ -453,12 +447,12 @@ const Foods = () => {
               <div
                 className={`text-xs mt-2 break-all flex flex-col ${dark ? "text-AppBlack" : "text-AppBlack/80"}`}
               >
-               <div className="flex flex-col">
-               {menus
-                  .map((menu) => menu.menu_id || menu.id)
-                  .filter(Boolean)
-                  .join(", ")}
-               </div>
+                <div className="flex flex-col">
+                  {menus
+                    .map((menu) => menu.menu_id || menu.id)
+                    .filter(Boolean)
+                    .join(", ")}
+                </div>
               </div>
             ) : null}
           </div>
@@ -525,7 +519,27 @@ const Foods = () => {
           )}
           <div className="text-AppRed">{warning}</div>
         </div>
-
+        <div className="col-span-2">
+          <label htmlFor="">Food id (optional for posting)</label>
+          {
+            <select
+              className="w-full"
+              value={postFood.food_id}
+              onChange={(e) =>
+                setpostFood({ ...postFood, food_id: e.target.value })
+              }
+            >
+              <option value="">Select food id</option>
+              {data?.food_items?.map((itm,_id) => (
+                <option key={itm._id} value={itm.food_id}>
+              {`${itm.name}(${itm.food_id})`}
+                </option>
+              ))}
+            </select>
+          }
+          
+          <div className="text-AppRed">{Fieldwarning}</div>
+        </div>
         <div className="col-span-2">
           <label htmlFor="">Food price</label>
           <input
@@ -570,15 +584,17 @@ const Foods = () => {
           onClick={isPosting ? null : handleFoodPosting}
           className="bg-AppBlack w-full text-AppWhite py-2 rounded-2xl capitalize font-bold text-xl col-span-2"
         >
-          {isPosting ? "posting..." : "post"}
+          {isPosting ? "posting..." : "post food"}
         </button>
 
         <button
           type="submit"
-          onClick={isDeleting ? null : handleFoodDeleting}
+          onClick={
+            isDeleting ? null : () => handleFoodDeleting(postFood.menu_id)
+          }
           className="bg-AppRed w-full text-AppWhite py-2 rounded-2xl capitalize font-bold text-xl col-span-2"
         >
-          {isDeleting ? "deleting..." : "delete"}
+          {isDeleting ? "deleting..." : "delete food"}
         </button>
 
         <div
@@ -595,9 +611,10 @@ const Foods = () => {
             <span className="font-semibold">food_id</span> and the original{" "}
             <span className="font-semibold">created_at</span> when the API
             provides it (same upsert shape as the server expects). If that route
-            returns 404/405, the app tries <span className="font-semibold">PUT</span>{" "}
-            then <span className="font-semibold">PATCH</span>. This is separate
-            from <span className="font-semibold">post new meal</span> (no{" "}
+            returns 404/405, the app tries{" "}
+            <span className="font-semibold">PUT</span> then{" "}
+            <span className="font-semibold">PATCH</span>. This is separate from{" "}
+            <span className="font-semibold">post new meal</span> (no{" "}
             <span className="font-semibold">food_id</span>).
           </p>
           <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -610,7 +627,8 @@ const Foods = () => {
             </button>
             {foodsList.length > 0 ? (
               <span className={`text-sm ${dark ? "text-AppWhite/70" : ""}`}>
-                {foodsList.length} meal{foodsList.length === 1 ? "" : "s"} loaded
+                {foodsList.length} meal{foodsList.length === 1 ? "" : "s"}{" "}
+                loaded
               </span>
             ) : null}
           </div>
@@ -723,7 +741,9 @@ const Foods = () => {
               )}
             </div>
             <div>
-              <label htmlFor="update-food-image">Replace image (optional)</label>
+              <label htmlFor="update-food-image">
+                Replace image (optional)
+              </label>
               <input
                 id="update-food-image"
                 key={updateImageInputKey}
