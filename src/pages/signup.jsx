@@ -10,6 +10,7 @@ import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 import { Apploader } from "../components/Apploader";
 import { IoClose } from "react-icons/io5";
 import { ThemeContext } from "../context/context";
+import { API_ENDPOINTS } from "../config/api";
 
 const Signup = () => {
   const [phone, setphone] = useState();
@@ -29,7 +30,7 @@ const Signup = () => {
     email,
     setemail,
   } = useContext(ThemeContext);
-  const url = "https://restaurant-management-f9kx.onrender.com/api/v1/user";
+  const url = API_ENDPOINTS.user;
   const passwordConditions = [
     {
       id: 1,
@@ -73,7 +74,11 @@ const Signup = () => {
       const response = await request.json();
       console.log("response", response);
       console.log("data", first_name, Last_name, email, phone, password);
-      if (response.InsertedID&&request.ok && request.status.toString().includes("20")) {
+      if (
+        response.InsertedID &&
+        request.ok &&
+        request.status.toString().includes("20")
+      ) {
         successNotification("Account created successfully");
         navigate("/signin", { state: { first_name } });
       } else {
@@ -199,7 +204,7 @@ const Signup = () => {
           ))}
         </div>
         <div
-          className={`${dark?"bg-AppBlack":"bg-AppRed"} text-center py-2 text-AppWhite text-xl capitalize rounded-2xl w-full `}
+          className={`${dark ? "bg-AppBlack" : "bg-AppRed"} text-center py-2 text-AppWhite text-xl capitalize rounded-2xl w-full `}
           onClick={handleSignUp}
         >
           {isSubmitting ? (

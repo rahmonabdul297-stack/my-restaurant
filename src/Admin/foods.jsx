@@ -7,13 +7,12 @@ import {
 import { ThemeContext } from "../context/context";
 import { loadSession } from "../utils/authSession";
 import useFetch from "../hooks/useFetch";
+import { API_ENDPOINTS } from "../config/api";
 
-const FOOD_POST_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/food";
-const FOODS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/foods";
-const MENUS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/menus";
+const FOOD_POST_URL = API_ENDPOINTS.food;
+const FOOD_UPDATE_URL = (foodId) => API_ENDPOINTS.foodUpdate(foodId);
+const FOODS_URL = API_ENDPOINTS.foods;
+const MENUS_URL = API_ENDPOINTS.menus;
 
 const normaliseFoodsList = (payload) => {
   if (!payload) return [];
@@ -22,11 +21,8 @@ const normaliseFoodsList = (payload) => {
   return [];
 };
 
-/** Update existing meal by id (not the same as POST create). */
-const foodItemUrl = (foodId) =>
-  `${FOOD_POST_URL}/${encodeURIComponent(String(foodId).trim())}`;
+const foodItemUrl = (foodId) => API_ENDPOINTS.foodItem(foodId);
 
-/** API expects JSON; image must be a string (URL or data URL). File objects cannot be JSON-serialized. */
 const readFileAsDataUrl = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -58,7 +54,7 @@ const Foods = () => {
     price: "",
     food_id: "",
   });
-  const [Fieldwarning,setFieldwarning]=useState("")
+  const [Fieldwarning, setFieldwarning] = useState("");
 
   const [foodsList, setFoodsList] = useState([]);
   const [isLoadingFoods, setIsLoadingFoods] = useState(false);
@@ -69,12 +65,12 @@ const Foods = () => {
     menu_id: "",
     food_image: null,
     existingFoodImage: "",
-    /** Preserve server `created_at` when updating via POST upsert */
     createdAtSnapshot: "",
   });
   const [updateImageInputKey, setUpdateImageInputKey] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateWarning, setUpdateWarning] = useState("");
+  const [preview, setPreview] = useState(null);
 
   const handleLoadMenus = useCallback(async () => {
     setIsLoadingMenus(true);
@@ -82,7 +78,6 @@ const Foods = () => {
       const request = await fetch(MENUS_URL, {
         headers: { Accept: "application/json" },
       });
-
       const text = await request.text();
       const data = text ? JSON.parse(text) : null;
       const parsedMenus = Array.isArray(data) ? data : [];
@@ -108,8 +103,7 @@ const Foods = () => {
       });
       const text = await request.text();
       const data = text ? JSON.parse(text) : null;
-      const items = normaliseFoodsList(data);
-      setFoodsList(items);
+      setFoodsList(normaliseFoodsList(data));
     } catch (err) {
       console.error(err);
       errorNotification("Could not load posted foods.");
@@ -123,6 +117,16 @@ const Foods = () => {
     handleLoadMenus();
     loadPostedFoods();
   }, [handleLoadMenus, loadPostedFoods]);
+
+  useEffect(() => {
+    if (!postFood.food_image) {
+      setPreview(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(postFood.food_image);
+    setPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [postFood.food_image]);
 
   const handleSelectFoodToUpdate = (foodId) => {
     if (!foodId) {
@@ -173,6 +177,7 @@ const Foods = () => {
     e.preventDefault();
     const priceNum = Number(updateFood.price);
     let foodImageStr = null;
+
     if (updateFood.food_image instanceof File) {
       try {
         foodImageStr = await readFileAsDataUrl(updateFood.food_image);
@@ -246,10 +251,10 @@ const Foods = () => {
       const shouldTryAlternateMethod = (status) =>
         status === 404 || status === 405 || status === 501;
 
-      let request = await fetch(FOOD_POST_URL, {
-        method: "POST",
+      let request = await fetch(FOOD_UPDATE_URL(id), {
+        method: "PUT",
         headers: jsonHeaders,
-        body: JSON.stringify(postUpsertBody),
+        body: JSON.stringify(putBody),
       });
       let data = await parseResponse(request);
 
@@ -317,8 +322,10 @@ const Foods = () => {
       !Number.isNaN(priceNum);
 
     if (!isValid) {
-      setwarning("All fields are required.");
-      infoNotification("Follow the instructions and try again.");
+      setwarning(
+        "Please complete the meal name, price, menu, and upload an image.",
+      );
+      infoNotification("Fill the required fields and try again.");
       return;
     }
 
@@ -371,6 +378,7 @@ const Foods = () => {
           menu_id: "",
           name: "",
           price: "",
+          food_id: "",
         });
         setFoodImageInputKey((k) => k + 1);
       } else {
@@ -387,389 +395,418 @@ const Foods = () => {
     }
   };
 
-  const {data,error,loading}=useFetch(FOODS_URL)
+  const { data } = useFetch(FOODS_URL);
+
   const handleFoodDeleting = async () => {
     setisDeleting(true);
-
     if (postFood.food_id) {
-      const request = await fetch(
-        `https://restaurant-management-f9kx.onrender.com/api/v1/food-delete/${postFood.food_id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
+      try {
+        const request = await fetch(
+          API_ENDPOINTS.foodDelete(postFood.food_id),
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
           },
-          // body: JSON.stringify(menu_id)
-        },
-      );
-      const response = await request.json();
-      console.log("response", response);
-      console.log("food_id:", postFood.food_id);
-      if (request.ok) {
-        successNotification("successful");
-      } else {
-        errorNotification("something when wrong!");
+        );
+        if (request.ok) {
+          successNotification("Food deleted successfully.");
+          setpostFood((prev) => ({ ...prev, food_id: "" }));
+          await loadPostedFoods();
+        } else {
+          errorNotification("Food with the selected ID does not exist.");
+        }
+      } catch (err) {
+        console.error(err);
+        errorNotification("Could not delete this food.");
       }
     } else {
-      setFieldwarning("Food ID is required!");
-      infoNotification("follow the instruction and try again!");
+      setFieldwarning("Select a food ID before deleting.");
+      infoNotification("Choose a food ID and try again.");
     }
     setisDeleting(false);
   };
+
   return (
     <div
-      className={`min-h-screen py-20 lg:ml-20 ${dark ? "bg-AppGray text-AppWhite" : "bg-AppWhite text-AppBlack"}`}
+      className={`min-h-screen py-4 sm:py-6 ${dark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
     >
-      <section className="px-10 py-20  ml-20 lg:ml-52   flex flex-col  lg:grid grid-cols-4 gap-5 text-AppBlack">
-        <h4 className="col-span-4">Post new meals</h4>
-        <p
-          className={`col-span-4 -mt-2 mb-2 text-sm normal-case ${
-            dark ? "text-AppWhite/70" : "text-AppBlack/65"
-          }`}
+      <section className="mx-auto max-w-7xl space-y-6 px-1 sm:px-2 lg:px-0">
+        <div
+          className={`rounded-[24px] border p-5 shadow-sm sm:p-6 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
         >
-          Creates a new catalog item only. To change an existing meal, use{" "}
-          <span className="font-semibold">Edit posted meals</span> below.
-        </p>
-        <section className="col-span-2 flex flex-col gap-5">
-          <div className=" flex justify-between items-center">
-            <label htmlFor="">Available menus</label>
-            <button
-              type="button"
-              onClick={isLoadingMenus ? null : handleLoadMenus}
-              className="bg-AppBlack text-AppWhite py-2 px-3 rounded-xl capitalize text-sm mt-2"
-            >
-              {isLoadingMenus ? "loading menus..." : "load menu ids"}
-            </button>
-          </div>
-          <div className="flex flex-col">
-            {" "}
-            {menus.length > 0 ? (
-              <div
-                className={`text-xs mt-2 break-all flex flex-col ${dark ? "text-AppBlack" : "text-AppBlack/80"}`}
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p
+                className={`text-sm font-semibold uppercase tracking-[0.25em] ${dark ? "text-slate-400" : "text-slate-500"}`}
               >
-                <div className="flex flex-col">
-                  {menus
-                    .map((menu) => menu.menu_id || menu.id)
-                    .filter(Boolean)
-                    .join(", ")}
+                Catalog control
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+                Post and manage meals
+              </h2>
+              <p
+                className={`mt-2 max-w-2xl text-sm ${dark ? "text-slate-400" : "text-slate-600"}`}
+              >
+                Create a menu first, then use the menu ID to post meals quickly.
+                The layout adjusts smoothly on both desktop and mobile.
+              </p>
+            </div>
+            <div
+              className={`rounded-2xl border px-4 py-3 text-sm ${dark ? "border-slate-800 bg-slate-800/70" : "border-slate-100 bg-slate-50"}`}
+            >
+              Tip: use the menu page to copy reusable menu IDs.
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+          <form
+            onSubmit={handleFoodPosting}
+            className={`rounded-[24px] border p-4 shadow-sm sm:p-6 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Create a new meal</h3>
+                <p
+                  className={`text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                >
+                  Add a new dish and keep your catalog updated.
+                </p>
+              </div>
+              <span
+                className={`rounded-full px-3 py-1 text-sm ${dark ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600"}`}
+              >
+                New entry
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-medium">
+                  Meal preview
+                </label>
+                <div
+                  className={`flex min-h-40 items-center justify-center overflow-hidden rounded-2xl border ${dark ? "border-slate-800 bg-slate-950" : "border-slate-200 bg-slate-50"}`}
+                >
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt="Meal preview"
+                      className="h-40 w-full object-cover"
+                    />
+                  ) : (
+                    <span
+                      className={`text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                    >
+                      Upload an image to preview it here
+                    </span>
+                  )}
                 </div>
               </div>
-            ) : null}
-          </div>
-        </section>
-        <div className="col-span-2">
-          <label htmlFor="">Food name</label>
-          <input
-            type="text"
-            placeholder="Enter Food name"
-            className="w-full"
-            onChange={(e) => setpostFood({ ...postFood, name: e.target.value })}
-          />
-          <div className="text-AppRed">{warning}</div>
-        </div>
 
-        <div className="col-span-2">
-          <label htmlFor="">Food image</label>
-          <input
-            key={foodImageInputKey}
-            type="file"
-            accept="image/*"
-            placeholder="upload food image"
-            className="w-full"
-            onChange={(e) =>
-              setpostFood({
-                ...postFood,
-                food_image: e.target.files?.[0] ?? null,
-              })
-            }
-          />
-          <div className="text-AppRed">{warning}</div>
-        </div>
-
-        <div className="col-span-2">
-          <label htmlFor="">Food menu id</label>
-          {menus.length > 0 ? (
-            <select
-              className="w-full"
-              value={postFood.menu_id}
-              onChange={(e) =>
-                setpostFood({ ...postFood, menu_id: e.target.value })
-              }
-            >
-              <option value="">Select menu id</option>
-              {menus.map((menu) => {
-                const menuId = menu.menu_id || menu.id;
-                if (!menuId) return null;
-                return (
-                  <option key={menuId} value={menuId}>
-                    {menu.name ? `${menu.name} (${menuId})` : menuId}
-                  </option>
-                );
-              })}
-            </select>
-          ) : (
-            <input
-              type="text"
-              placeholder="Enter food menu id"
-              className="w-full"
-              onChange={(e) =>
-                setpostFood({ ...postFood, menu_id: e.target.value })
-              }
-            />
-          )}
-          <div className="text-AppRed">{warning}</div>
-        </div>
-        <div className="col-span-2">
-          <label htmlFor="">Food id (optional for posting)</label>
-          {
-            <select
-              className="w-full"
-              value={postFood.food_id}
-              onChange={(e) =>
-                setpostFood({ ...postFood, food_id: e.target.value })
-              }
-            >
-              <option value="">Select food id</option>
-              {data?.food_items?.map((itm,_id) => (
-                <option key={itm._id} value={itm.food_id}>
-              {`${itm.name}(${itm.food_id})`}
-                </option>
-              ))}
-            </select>
-          }
-          
-          <div className="text-AppRed">{Fieldwarning}</div>
-        </div>
-        <div className="col-span-2">
-          <label htmlFor="">Food price</label>
-          <input
-            type="number"
-            placeholder="Enter Food price"
-            className="w-full"
-            onChange={(e) =>
-              setpostFood({ ...postFood, price: e.target.value })
-            }
-          />
-          <div className="text-AppRed">{warning}</div>
-        </div>
-
-        <div className="col-span-2">
-          <label htmlFor="food-created-at">Created at</label>
-          <div
-            id="food-created-at"
-            className={`font-medium border rounded-lg px-3 py-2 ${
-              dark
-                ? "border-AppGray/40 bg-AppBlack/40 text-AppWhite"
-                : "border-AppBlack/10 bg-AppWhite text-AppBlack/80"
-            }`}
-          >
-            {formatTimestamp(createdAtDisplay)}
-          </div>
-        </div>
-        <div className="col-span-2">
-          <label htmlFor="food-updated-at">Updated at</label>
-          <div
-            id="food-updated-at"
-            className={`font-medium border rounded-lg px-3 py-2 ${
-              dark
-                ? "border-AppGray/40 bg-AppBlack/40 text-AppWhite"
-                : "border-AppBlack/10 bg-AppWhite text-AppBlack/80"
-            }`}
-          >
-            {formatTimestamp(updatedAtDisplay)}
-          </div>
-        </div>
-        <button
-          type="submit"
-          onClick={isPosting ? null : handleFoodPosting}
-          className="bg-AppBlack w-full text-AppWhite py-2 rounded-2xl capitalize font-bold text-xl col-span-2"
-        >
-          {isPosting ? "posting..." : "post food"}
-        </button>
-
-        <button
-          type="submit"
-          onClick={
-            isDeleting ? null : () => handleFoodDeleting(postFood.menu_id)
-          }
-          className="bg-AppRed w-full text-AppWhite py-2 rounded-2xl capitalize font-bold text-xl col-span-2"
-        >
-          {isDeleting ? "deleting..." : "delete food"}
-        </button>
-
-        <div
-          className={`col-span-4 mt-10 border-t pt-10 ${
-            dark ? "border-AppGray/50" : "border-AppBlack/10"
-          }`}
-        >
-          <h4 className="mb-2 text-lg font-bold">Edit posted meals</h4>
-          <p
-            className={`mb-6 text-sm ${dark ? "text-AppWhite/75" : "text-AppBlack/70"}`}
-          >
-            Choose a meal, change its fields, then update. Sends{" "}
-            <span className="font-semibold">POST /food</span> with{" "}
-            <span className="font-semibold">food_id</span> and the original{" "}
-            <span className="font-semibold">created_at</span> when the API
-            provides it (same upsert shape as the server expects). If that route
-            returns 404/405, the app tries{" "}
-            <span className="font-semibold">PUT</span> then{" "}
-            <span className="font-semibold">PATCH</span>. This is separate from{" "}
-            <span className="font-semibold">post new meal</span> (no{" "}
-            <span className="font-semibold">food_id</span>).
-          </p>
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={isLoadingFoods ? null : loadPostedFoods}
-              className="rounded-xl bg-AppBlack px-4 py-2 text-sm font-semibold text-AppWhite capitalize disabled:opacity-60"
-            >
-              {isLoadingFoods ? "Loading meals…" : "Refresh posted meals"}
-            </button>
-            {foodsList.length > 0 ? (
-              <span className={`text-sm ${dark ? "text-AppWhite/70" : ""}`}>
-                {foodsList.length} meal{foodsList.length === 1 ? "" : "s"}{" "}
-                loaded
-              </span>
-            ) : null}
-          </div>
-
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-            <div>
-              <label htmlFor="update-food-select">Select meal to update</label>
-              <select
-                id="update-food-select"
-                className="mt-1 w-full rounded-lg border px-2 py-2"
-                value={updateFood.food_id}
-                onChange={(e) => handleSelectFoodToUpdate(e.target.value)}
-              >
-                <option value="">— Choose a meal —</option>
-                {foodsList.map((f) => {
-                  const id = String(f.food_id ?? f.id ?? "");
-                  if (!id) return null;
-                  const label = f.name ? `${f.name} (${id})` : id;
-                  return (
-                    <option key={id} value={id}>
-                      {label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-
-            {updateFood.existingFoodImage ? (
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium">Current image</span>
-                <img
-                  src={updateFood.existingFoodImage}
-                  alt=""
-                  className="h-32 max-w-full rounded-lg border object-cover object-center"
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Meal name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter food name"
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={postFood.name}
+                  onChange={(e) =>
+                    setpostFood({ ...postFood, name: e.target.value })
+                  }
                 />
               </div>
-            ) : (
-              <div
-                className={`flex items-center rounded-lg border px-3 py-8 text-center text-sm ${
-                  dark
-                    ? "border-AppGray/40 text-AppWhite/60"
-                    : "border-AppBlack/10 text-AppBlack/60"
-                }`}
-              >
-                Select a meal to preview its image, or upload a new file below.
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
-            <div>
-              <label htmlFor="update-food-name">Food name</label>
-              <input
-                id="update-food-name"
-                type="text"
-                className="mt-1 w-full rounded-lg border px-2 py-2"
-                value={updateFood.name}
-                placeholder="Meal name"
-                onChange={(e) =>
-                  setUpdateFood({ ...updateFood, name: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="update-food-price">Price</label>
-              <input
-                id="update-food-price"
-                type="number"
-                className="mt-1 w-full rounded-lg border px-2 py-2"
-                value={updateFood.price}
-                placeholder="Price"
-                onChange={(e) =>
-                  setUpdateFood({ ...updateFood, price: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="update-food-menu">Menu</label>
-              {menus.length > 0 ? (
-                <select
-                  id="update-food-menu"
-                  className="mt-1 w-full rounded-lg border px-2 py-2"
-                  value={updateFood.menu_id}
+              <div>
+                <label className="mb-2 block text-sm font-medium">Price</label>
+                <input
+                  type="number"
+                  placeholder="Enter price"
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={postFood.price}
                   onChange={(e) =>
-                    setUpdateFood({ ...updateFood, menu_id: e.target.value })
+                    setpostFood({ ...postFood, price: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Menu ID
+                </label>
+                {menus.length > 0 ? (
+                  <select
+                    className="w-full rounded-2xl border px-3 py-2"
+                    value={postFood.menu_id}
+                    onChange={(e) =>
+                      setpostFood({ ...postFood, menu_id: e.target.value })
+                    }
+                  >
+                    <option value="">Select menu ID</option>
+                    {menus.map((menu) => {
+                      const menuId = menu.menu_id || menu.id;
+                      if (!menuId) return null;
+                      return (
+                        <option key={menuId} value={menuId}>
+                          {menu.name ? `${menu.name} (${menuId})` : menuId}
+                        </option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    placeholder="Enter menu ID"
+                    className="w-full rounded-2xl border px-3 py-2"
+                    value={postFood.menu_id}
+                    onChange={(e) =>
+                      setpostFood({ ...postFood, menu_id: e.target.value })
+                    }
+                  />
+                )}
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Meal image
+                </label>
+                <input
+                  key={foodImageInputKey}
+                  type="file"
+                  accept="image/*"
+                  className="w-full rounded-2xl border border-dashed px-3 py-2"
+                  onChange={(e) =>
+                    setpostFood({
+                      ...postFood,
+                      food_image: e.target.files?.[0] ?? null,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Food ID (optional)
+                </label>
+                <select
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={postFood.food_id}
+                  onChange={(e) =>
+                    setpostFood({ ...postFood, food_id: e.target.value })
                   }
                 >
-                  <option value="">Select menu</option>
-                  {menus.map((menu) => {
-                    const menuId = menu.menu_id || menu.id;
-                    if (!menuId) return null;
+                  <option value="">Select food ID</option>
+                  {data?.food_items?.map((itm) => (
+                    <option
+                      key={itm._id}
+                      value={itm.food_id}
+                    >{`${itm.name} (${itm.food_id})`}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="md:col-span-2 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Created at
+                  </label>
+                  <div
+                    className={`rounded-2xl border px-3 py-2 text-sm ${dark ? "border-slate-800 bg-slate-950" : "border-slate-200 bg-slate-50"}`}
+                  >
+                    {formatTimestamp(createdAtDisplay)}
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Updated at
+                  </label>
+                  <div
+                    className={`rounded-2xl border px-3 py-2 text-sm ${dark ? "border-slate-800 bg-slate-950" : "border-slate-200 bg-slate-50"}`}
+                  >
+                    {formatTimestamp(updatedAtDisplay)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-sm text-AppRed">{warning}</div>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="submit"
+                className="flex-1 rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white"
+                disabled={isPosting}
+              >
+                {isPosting ? "Posting..." : "Post food"}
+              </button>
+              <button
+                type="button"
+                onClick={handleFoodDeleting}
+                className="flex-1 rounded-2xl bg-AppRed px-4 py-3 font-semibold text-white"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete selected food"}
+              </button>
+            </div>
+            <div className="mt-2 text-sm text-AppRed">{Fieldwarning}</div>
+          </form>
+
+          <form
+            onSubmit={handleFoodUpdate}
+            className={`rounded-[24px] border p-4 shadow-sm sm:p-6 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Edit posted meals</h3>
+                <p
+                  className={`text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                >
+                  Refresh your list and update existing dishes in a few clicks.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={isLoadingFoods ? null : loadPostedFoods}
+                className={`rounded-2xl px-3 py-2 text-sm font-semibold ${dark ? "bg-slate-800 text-slate-100" : "bg-slate-100 text-slate-700"}`}
+              >
+                {isLoadingFoods ? "Loading..." : "Refresh"}
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Select meal to update
+                </label>
+                <select
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={updateFood.food_id}
+                  onChange={(e) => handleSelectFoodToUpdate(e.target.value)}
+                >
+                  <option value="">Choose a meal</option>
+                  {foodsList.map((f) => {
+                    const id = String(f.food_id ?? f.id ?? "");
+                    if (!id) return null;
                     return (
-                      <option key={menuId} value={menuId}>
-                        {menu.name ? `${menu.name} (${menuId})` : menuId}
+                      <option key={id} value={id}>
+                        {f.name ? `${f.name} (${id})` : id}
                       </option>
                     );
                   })}
                 </select>
+              </div>
+
+              {updateFood.existingFoodImage ? (
+                <div>
+                  <p className="mb-2 text-sm font-medium">Current image</p>
+                  <img
+                    src={updateFood.existingFoodImage}
+                    alt="Current meal"
+                    className="h-36 w-full rounded-2xl border object-cover"
+                  />
+                </div>
               ) : (
-                <input
-                  id="update-food-menu"
-                  type="text"
-                  className="mt-1 w-full rounded-lg border px-2 py-2"
-                  value={updateFood.menu_id}
-                  placeholder="Menu id"
-                  onChange={(e) =>
-                    setUpdateFood({ ...updateFood, menu_id: e.target.value })
-                  }
-                />
+                <div
+                  className={`rounded-2xl border px-3 py-8 text-center text-sm ${dark ? "border-slate-800 bg-slate-950/70 text-slate-400" : "border-slate-200 bg-slate-50 text-slate-500"}`}
+                >
+                  Select a meal to preview its image, or upload a new file
+                  below.
+                </div>
               )}
-            </div>
-            <div>
-              <label htmlFor="update-food-image">
-                Replace image (optional)
-              </label>
-              <input
-                id="update-food-image"
-                key={updateImageInputKey}
-                type="file"
-                accept="image/*"
-                className="mt-1 w-full"
-                onChange={(e) =>
-                  setUpdateFood({
-                    ...updateFood,
-                    food_image: e.target.files?.[0] ?? null,
-                  })
-                }
-              />
-            </div>
-          </div>
 
-          <div className="text-AppRed mt-2 text-sm">{updateWarning}</div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Meal name
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full rounded-2xl border px-3 py-2"
+                    value={updateFood.name}
+                    placeholder="Meal name"
+                    onChange={(e) =>
+                      setUpdateFood({ ...updateFood, name: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Price
+                  </label>
+                  <input
+                    type="number"
+                    className="w-full rounded-2xl border px-3 py-2"
+                    value={updateFood.price}
+                    placeholder="Price"
+                    onChange={(e) =>
+                      setUpdateFood({ ...updateFood, price: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Menu</label>
+                  {menus.length > 0 ? (
+                    <select
+                      className="w-full rounded-2xl border px-3 py-2"
+                      value={updateFood.menu_id}
+                      onChange={(e) =>
+                        setUpdateFood({
+                          ...updateFood,
+                          menu_id: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select menu</option>
+                      {menus.map((menu) => {
+                        const menuId = menu.menu_id || menu.id;
+                        if (!menuId) return null;
+                        return (
+                          <option key={menuId} value={menuId}>
+                            {menu.name ? `${menu.name} (${menuId})` : menuId}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      className="w-full rounded-2xl border px-3 py-2"
+                      value={updateFood.menu_id}
+                      placeholder="Menu ID"
+                      onChange={(e) =>
+                        setUpdateFood({
+                          ...updateFood,
+                          menu_id: e.target.value,
+                        })
+                      }
+                    />
+                  )}
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Replace image
+                  </label>
+                  <input
+                    key={updateImageInputKey}
+                    type="file"
+                    accept="image/*"
+                    className="w-full rounded-2xl border border-dashed px-3 py-2"
+                    onChange={(e) =>
+                      setUpdateFood({
+                        ...updateFood,
+                        food_image: e.target.files?.[0] ?? null,
+                      })
+                    }
+                  />
+                </div>
+              </div>
 
-          <button
-            type="button"
-            onClick={isUpdating ? null : handleFoodUpdate}
-            disabled={!updateFood.food_id}
-            className="mt-6 w-full max-w-md rounded-2xl bg-AppBlack py-3 text-lg font-bold text-AppWhite capitalize disabled:opacity-50 lg:max-w-xs"
-          >
-            {isUpdating ? "Updating…" : "Update this meal"}
-          </button>
+              <div className="text-sm text-AppRed">{updateWarning}</div>
+              <button
+                type="submit"
+                className="w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white"
+                disabled={isUpdating || !updateFood.food_id}
+              >
+                {isUpdating ? "Updating..." : "Update this meal"}
+              </button>
+            </div>
+          </form>
         </div>
       </section>
     </div>

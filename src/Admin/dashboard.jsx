@@ -16,15 +16,14 @@ import {
 } from "recharts";
 import { ThemeContext } from "../context/context";
 import useFetch from "../hooks/useFetch";
+import MetricCard from "./components/MetricCard";
+import ActivityPanel from "./components/ActivityPanel";
+import { API_ENDPOINTS } from "../config/api";
 
-const USERS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/users";
-const FOODS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/foods";
-const ORDERS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/orders";
-const MENUS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/menus";
+const USERS_URL = API_ENDPOINTS.users;
+const FOODS_URL = API_ENDPOINTS.foods;
+const ORDERS_URL = API_ENDPOINTS.orders;
+const MENUS_URL = API_ENDPOINTS.menus;
 
 /** Normalise list endpoints that may return an array or `{ key: [] }`. */
 const countListPayload = (payload, nestedKeys = []) => {
@@ -67,12 +66,7 @@ const AdminDashboard = () => {
       { name: "Orders", value: listedOrdersCount },
       { name: "Menus", value: listedMenusCount },
     ],
-    [
-      listedFoodsCount,
-      usersCount,
-      listedOrdersCount,
-      listedMenusCount,
-    ],
+    [listedFoodsCount, usersCount, listedOrdersCount, listedMenusCount],
   );
 
   const metricsTotal = useMemo(
@@ -83,280 +77,394 @@ const AdminDashboard = () => {
   const chartsLoading =
     usersLoading || foodsLoading || ordersLoading || menusLoading;
 
-  const linkClass =
-    dark
-      ? "rounded-xl border border-AppGray bg-AppBlack/40 px-4 py-2 text-sm font-semibold capitalize text-AppWhite hover:bg-AppGray/30 transition-colors"
-      : "rounded-xl border border-AppRed/40 bg-AppWhite px-4 py-2 text-sm font-semibold capitalize text-AppBlack hover:bg-AppRed/10 transition-colors";
+  const linkClass = dark
+    ? "rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-sm font-semibold capitalize text-slate-100 transition-colors hover:bg-slate-800"
+    : "rounded-full border border-indigo-100 bg-white px-4 py-2 text-sm font-semibold capitalize text-slate-700 transition-colors hover:bg-indigo-50";
+
+  const statCards = [
+    {
+      title: "Meals",
+      value: foodsLoading ? "…" : listedFoodsCount,
+      subtitle: "Available for customers",
+      accent: dark
+        ? "from-emerald-500 to-teal-500"
+        : "from-emerald-500 to-teal-500",
+      icon: "🍽️",
+    },
+    {
+      title: "Users",
+      value: usersLoading ? "…" : usersCount,
+      subtitle: "Registered accounts",
+      accent: dark ? "from-sky-500 to-cyan-500" : "from-sky-500 to-cyan-500",
+      icon: "👥",
+    },
+    {
+      title: "Orders",
+      value: ordersLoading ? "…" : listedOrdersCount,
+      subtitle: "Active order entries",
+      accent: dark
+        ? "from-amber-500 to-orange-500"
+        : "from-amber-500 to-orange-500",
+      icon: "🛒",
+    },
+    {
+      title: "Menus",
+      value: menusLoading ? "…" : listedMenusCount,
+      subtitle: "Curated collections",
+      accent: dark
+        ? "from-violet-500 to-fuchsia-500"
+        : "from-violet-500 to-fuchsia-500",
+      icon: "📋",
+    },
+  ];
+
+  const activityItems = useMemo(
+    () => [
+      {
+        label: "Latest meals",
+        detail: listedFoodsCount
+          ? `${listedFoodsCount} menu items are ready for customers`
+          : "Add a meal to start the catalog",
+        value: foodsLoading ? "…" : listedFoodsCount,
+      },
+      {
+        label: "Customer accounts",
+        detail: usersCount
+          ? `${usersCount} accounts registered`
+          : "No users fetched yet",
+        value: usersLoading ? "…" : usersCount,
+      },
+      {
+        label: "Pending orders",
+        detail: listedOrdersCount
+          ? `${listedOrdersCount} orders in the backend`
+          : "No order data yet",
+        value: ordersLoading ? "…" : listedOrdersCount,
+      },
+    ],
+    [
+      foodsLoading,
+      listedFoodsCount,
+      listedOrdersCount,
+      ordersLoading,
+      usersCount,
+      usersLoading,
+    ],
+  );
+
+  const quickActions = useMemo(
+    () => [
+      {
+        label: "Create a meal",
+        href: "/foods",
+        detail: "Post new dishes and upload images",
+      },
+      {
+        label: "Create a menu",
+        href: "/menu",
+        detail: "Organize reusable menu IDs",
+      },
+      {
+        label: "Review users",
+        href: "/users",
+        detail: "Track account activity",
+      },
+      {
+        label: "Manage orders",
+        href: "/orders",
+        detail: "Monitor purchase requests",
+      },
+    ],
+    [],
+  );
+
   return (
-    <div className="py-40 flex justify-center items-center">
-      <section className="ml-[100px] lg:ml-[100px]">
-        <h5
-          className={
-            dark
-              ? "text-AppBlack font-bold capitalize text-2xl  lg:text-4xl px-8 py-4"
-              : "text-AppRed  font-bold capitalize  text-2xl lg:text-4xl px-8 py-4"
-          }
+    <div
+      className={`min-h-screen overflow-x-hidden px-3 py-6 sm:px-4 lg:px-6 ${dark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
+    >
+      <section className="mx-auto w-full max-w-7xl rounded-[28px] border border-slate-200/70 bg-white/80 p-3 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur sm:p-5 lg:p-7 dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-[0_20px_70px_rgba(2,6,23,0.35)]">
+        <div
+          className={`rounded-[24px] border p-6 sm:p-8 ${dark ? "border-slate-800 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950" : "border-indigo-100 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800 text-white"}`}
         >
-          dashboard overviews
-        </h5>
-        <nav
-          className="mb-4 flex flex-wrap gap-2 px-8"
-          aria-label="Admin quick links"
-        >
-          <Link to="/foods" className={linkClass}>
-            Meals
-          </Link>
-          <Link to="/users" className={linkClass}>
-            Users
-          </Link>
-          <Link to="/orders" className={linkClass}>
-            Orders
-          </Link>
-          <Link to="/menu" className={linkClass}>
-            Menus
-          </Link>
-        </nav>
-        <section className="flex justify-between gap-3 px-8  flex-col lg:flex-row">
-          <div className={dark ? "overview-card" : "overview-cards"}>
-            <h3
-              className={
-                dark
-                  ? "text-xl text-AppWhite uppercase text-center font-bold"
-                  : "text-AppBlack uppercase text-center text-xl font-bold"
-              }
-            >
-              Total meals available
-            </h3>
-            <div
-              className={`${dark ? "text-AppWhite" : "text-green-500"} font-black text-5xl`}
-            >
-              {foodsLoading ? "…" : listedFoodsCount}
-            </div>
-          </div>
-          <div className={dark ? "overview-card" : "overview-cards"}>
-            <h3
-              className={
-                dark
-                  ? "text-xl text-AppWhite uppercase text-center font-bold"
-                  : "text-AppBlack uppercase text-center text-xl font-bold"
-              }
-            >
-              Total users
-            </h3>
-            <div
-              className={`${dark ? "text-AppWhite" : "text-green-500"} font-black text-5xl`}
-            >
-              {usersLoading ? "…" : usersCount}
-            </div>
-          </div>  
-          <div className={dark ? "overview-card" : "overview-cards"}>
-            <h3
-              className={
-                dark
-                  ? "text-xl text-AppWhite uppercase text-center font-bold"
-                  : "text-AppBlack uppercase text-center text-xl font-bold"
-              }
-            >
-              Total orders listed
-            </h3>
-            <div
-              className={`${dark ? "text-AppWhite" : "text-green-500"} font-black text-5xl`}
-            >
-              {ordersLoading ? "…" : listedOrdersCount}
-            </div>
-          </div>
-          <div className={dark ? "overview-card" : "overview-cards"}>
-            <h3
-              className={
-                dark
-                  ? "text-xl text-AppWhite uppercase text-center font-bold"
-                  : "text-AppBlack uppercase text-center text-xl font-bold"
-              }
-            >
-              Total menus listed
-            </h3>
-            <div
-              className={`${dark ? "text-AppWhite" : "text-green-500"} font-black text-5xl`}
-            >
-              {menusLoading ? "…" : listedMenusCount}
-            </div>
-          </div>
-        </section>
-        <h5
-          className={
-            dark
-              ? "text-AppBlack font-bold capitalize text-2xl  lg:text-4xl px-8 py-4"
-              : "text-AppRed  font-bold capitalize  text-2xl  lg:text-4xl px-8 py-4"
-          }
-        >
-          chart overviews
-        </h5>
-        <p
-          className={
-            dark
-              ? "px-8 pb-2 text-sm text-AppWhite/70"
-              : "px-8 pb-2 text-sm text-AppBlack/70"
-          }
-        >
-          Bar chart compares raw counts; pie chart shows each metric&apos;s
-          share of the combined total (same numbers as the cards above).
-        </p>
-        <section className="flex flex-col items-stretch justify-between gap-5 px-8 lg:flex-row">
-          {chartsLoading ? (
-            <div
-              className={
-                dark
-                  ? "flex min-h-[320px] w-full items-center justify-center rounded-xl border-2 border-AppGray bg-AppBlack/55"
-                  : "flex min-h-[320px] w-full items-center justify-center rounded-xl border-2 border-AppRed bg-AppWhite"
-              }
-            >
-              <ClipLoader
-                color={dark ? "#ffffff" : "#ec190e"}
-                aria-label="Loading charts"
-              />
-            </div>
-          ) : (
-            <>
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
               <div
-                className={
-                  dark
-                    ? "w-full min-w-0 flex-1 rounded-xl border-2 border-AppGray bg-AppBlack/55 p-4 pt-6 lg:w-[50%]"
-                    : "w-full min-w-0 flex-1 rounded-xl border-2 border-AppRed bg-AppWhite p-4 pt-6 lg:w-[50%]"
-                }
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] ${dark ? "bg-white/10 text-slate-200" : "bg-white/15 text-slate-100"}`}
               >
-                <h6
-                  className={
-                    dark
-                      ? "mb-2 text-center text-sm font-bold uppercase tracking-wide text-AppWhite"
-                      : "mb-2 text-center text-sm font-bold uppercase tracking-wide text-AppBlack"
-                  }
+                Operations Center
+              </div>
+              <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">
+                Ecommerce Admin Dashboard
+              </h2>
+              <p
+                className={`mt-3 text-sm sm:text-base ${dark ? "text-slate-300" : "text-slate-200"}`}
+              >
+                Monitor meals, customers, orders, and menus from one polished
+                control panel.
+              </p>
+            </div>
+            <nav
+              className="flex flex-wrap gap-2"
+              aria-label="Admin quick links"
+            >
+              <Link to="/foods" className={linkClass}>
+                Meals
+              </Link>
+              <Link to="/users" className={linkClass}>
+                Users
+              </Link>
+              <Link to="/orders" className={linkClass}>
+                Orders
+              </Link>
+              <Link to="/menu" className={linkClass}>
+                Menus
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {statCards.map((card) => (
+            <MetricCard
+              key={card.title}
+              icon={card.icon}
+              title={card.title}
+              value={card.value}
+              subtitle={card.subtitle}
+              accent={card.accent}
+              dark={dark}
+            />
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1.12fr_0.88fr]">
+          <div
+            className={`rounded-2xl border p-4 shadow-sm sm:p-5 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p
+                  className={`text-sm font-semibold uppercase tracking-[0.24em] ${dark ? "text-slate-400" : "text-slate-500"}`}
                 >
-                  Counts by category
-                </h6>
-                <div className="h-[280px] w-full min-w-0">
+                  Inventory overview
+                </p>
+                <h3
+                  className={`text-lg font-semibold ${dark ? "text-white" : "text-slate-900"}`}
+                >
+                  Category distribution
+                </h3>
+              </div>
+              <span
+                className={`rounded-full px-3 py-1 text-sm font-medium ${dark ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600"}`}
+              >
+                Live data
+              </span>
+            </div>
+            {chartsLoading ? (
+              <div
+                className={`flex min-h-[320px] items-center justify-center rounded-xl border ${dark ? "border-slate-800 bg-slate-950/70" : "border-slate-200 bg-slate-50"}`}
+              >
+                <ClipLoader
+                  color={dark ? "#ffffff" : "#4f46e5"}
+                  aria-label="Loading charts"
+                />
+              </div>
+            ) : (
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={dark ? "#334155" : "#e2e8f0"}
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{
+                        fill: dark ? "#f8fafc" : "#0f172a",
+                        fontSize: 12,
+                      }}
+                      axisLine={{ stroke: dark ? "#64748b" : "#94a3b8" }}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      tick={{
+                        fill: dark ? "#f8fafc" : "#0f172a",
+                        fontSize: 12,
+                      }}
+                      axisLine={{ stroke: dark ? "#64748b" : "#94a3b8" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: dark ? "#020617" : "#ffffff",
+                        border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`,
+                        borderRadius: "0.75rem",
+                        color: dark ? "#f8fafc" : "#0f172a",
+                      }}
+                      formatter={(value) => [
+                        `${value} (${metricsTotal ? Math.round((Number(value) / metricsTotal) * 100) : 0}% of total)`,
+                        "Listed",
+                      ]}
+                    />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]} name="Listed">
+                      {chartData.map((_, index) => (
+                        <Cell key={`bar-${index}`} fill={CHART_COLORS[index]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+
+          <div
+            className={`rounded-2xl border p-4 shadow-sm sm:p-5 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p
+                  className={`text-sm font-semibold uppercase tracking-[0.24em] ${dark ? "text-slate-400" : "text-slate-500"}`}
+                >
+                  Business health
+                </p>
+                <h3
+                  className={`text-lg font-semibold ${dark ? "text-white" : "text-slate-900"}`}
+                >
+                  Share of total activity
+                </h3>
+              </div>
+              <span
+                className={`rounded-full px-3 py-1 text-sm font-medium ${dark ? "bg-sky-500/10 text-sky-400" : "bg-sky-50 text-sky-600"}`}
+              >
+                Balanced view
+              </span>
+            </div>
+            {chartsLoading ? (
+              <div
+                className={`flex min-h-[320px] items-center justify-center rounded-xl border ${dark ? "border-slate-800 bg-slate-950/70" : "border-slate-200 bg-slate-50"}`}
+              >
+                <ClipLoader
+                  color={dark ? "#ffffff" : "#4f46e5"}
+                  aria-label="Loading charts"
+                />
+              </div>
+            ) : (
+              <div className="h-[300px] w-full">
+                {metricsTotal > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={chartData}
-                      margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke={dark ? "#4b5563" : "#e5e7eb"}
-                      />
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fill: dark ? "#f9fafb" : "#111827", fontSize: 12 }}
-                        axisLine={{ stroke: dark ? "#6b7280" : "#9ca3af" }}
-                      />
-                      <YAxis
-                        allowDecimals={false}
-                        tick={{ fill: dark ? "#f9fafb" : "#111827", fontSize: 12 }}
-                        axisLine={{ stroke: dark ? "#6b7280" : "#9ca3af" }}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: dark ? "#111827" : "#ffffff",
-                          border: `1px solid ${dark ? "#374151" : "#e5e7eb"}`,
-                          borderRadius: "0.5rem",
-                          color: dark ? "#f9fafb" : "#111827",
-                        }}
-                        formatter={(value) => [
-                          `${value} (${metricsTotal ? Math.round((Number(value) / metricsTotal) * 100) : 0}% of total)`,
-                          "Listed",
-                        ]}
-                      />
-                      <Bar dataKey="value" radius={[6, 6, 0, 0]} name="Listed">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={56}
+                        outerRadius={92}
+                        paddingAngle={2}
+                        labelLine={false}
+                        label={false}
+                      >
                         {chartData.map((_, index) => (
                           <Cell
-                            key={`bar-${index}`}
+                            key={`pie-${index}`}
                             fill={CHART_COLORS[index]}
                           />
                         ))}
-                      </Bar>
-                    </BarChart>
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: dark ? "#020617" : "#ffffff",
+                          border: `1px solid ${dark ? "#334155" : "#e2e8f0"}`,
+                          borderRadius: "0.75rem",
+                          color: dark ? "#f8fafc" : "#0f172a",
+                        }}
+                        formatter={(value, _name, item) => {
+                          const pct = metricsTotal
+                            ? Math.round((Number(value) / metricsTotal) * 100)
+                            : 0;
+                          return [
+                            `${value} listed (${pct}%)`,
+                            item.payload.name,
+                          ];
+                        }}
+                      />
+                      <Legend
+                        wrapperStyle={{
+                          color: dark ? "#f8fafc" : "#0f172a",
+                          fontSize: "12px",
+                        }}
+                      />
+                    </PieChart>
                   </ResponsiveContainer>
-                </div>
+                ) : (
+                  <div
+                    className={`flex h-full items-center justify-center px-4 text-center text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                  >
+                    Add meals, users, orders, or menus so the share chart has a
+                    non-zero total.
+                  </div>
+                )}
               </div>
-              <div
-                className={
-                  dark
-                    ? "w-full min-w-0 flex-1 rounded-xl border-2 border-AppGray bg-AppBlack/55 p-4 pt-6 lg:w-[50%]"
-                    : "w-full min-w-0 flex-1 rounded-xl border-2 border-AppRed bg-AppWhite p-4 pt-6 lg:w-[50%]"
-                }
-              >
-                <h6
-                  className={
-                    dark
-                      ? "mb-2 text-center text-sm font-bold uppercase tracking-wide text-AppWhite"
-                      : "mb-2 text-center text-sm font-bold uppercase tracking-wide text-AppBlack"
-                  }
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <ActivityPanel
+            dark={dark}
+            title="Operations snapshot"
+            subtitle="At a glance"
+            items={activityItems}
+            emptyLabel="No activity items are available yet."
+          />
+
+          <div
+            className={`rounded-2xl border p-4 shadow-sm sm:p-5 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p
+                  className={`text-sm font-semibold uppercase tracking-[0.24em] ${dark ? "text-slate-400" : "text-slate-500"}`}
                 >
-                  Share of combined total
-                </h6>
-                <div className="h-[280px] w-full min-w-0">
-                  {metricsTotal > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={chartData}
-                          dataKey="value"
-                          nameKey="name"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={52}
-                          outerRadius={88}
-                          paddingAngle={2}
-                          labelLine={false}
-                          label={false}
-                        >
-                          {chartData.map((_, index) => (
-                            <Cell
-                              key={`pie-${index}`}
-                              fill={CHART_COLORS[index]}
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: dark ? "#111827" : "#ffffff",
-                            border: `1px solid ${dark ? "#374151" : "#e5e7eb"}`,
-                            borderRadius: "0.5rem",
-                            color: dark ? "#f9fafb" : "#111827",
-                          }}
-                          formatter={(value, _name, item) => {
-                            const pct = metricsTotal
-                              ? Math.round(
-                                  (Number(value) / metricsTotal) * 100,
-                                )
-                              : 0;
-                            return [`${value} listed (${pct}%)`, item.payload.name];
-                          }}
-                        />
-                        <Legend
-                          wrapperStyle={{
-                            color: dark ? "#f9fafb" : "#111827",
-                            fontSize: "12px",
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div
-                      className={
-                        dark
-                          ? "flex h-full items-center justify-center px-4 text-center text-sm text-AppWhite/70"
-                          : "flex h-full items-center justify-center px-4 text-center text-sm text-AppBlack/70"
-                      }
-                    >
-                      Add meals, users, orders, or menus so the share chart
-                      has a non-zero total.
-                    </div>
-                  )}
-                </div>
+                  Quick actions
+                </p>
+                <h3
+                  className={`text-lg font-semibold ${dark ? "text-white" : "text-slate-900"}`}
+                >
+                  Keep the store moving
+                </h3>
               </div>
-            </>
-          )}
-        </section>
+              <span
+                className={`rounded-full px-3 py-1 text-sm font-medium ${dark ? "bg-indigo-500/10 text-indigo-400" : "bg-indigo-50 text-indigo-600"}`}
+              >
+                Suggested
+              </span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {quickActions.map((action) => (
+                <Link
+                  key={action.label}
+                  to={action.href}
+                  className={`rounded-2xl border p-4 transition hover:-translate-y-0.5 ${dark ? "border-slate-800 bg-slate-950/60 hover:border-slate-700" : "border-slate-200 bg-slate-50 hover:border-indigo-200"}`}
+                >
+                  <p
+                    className={`text-sm font-semibold ${dark ? "text-slate-100" : "text-slate-800"}`}
+                  >
+                    {action.label}
+                  </p>
+                  <p
+                    className={`mt-1 text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                  >
+                    {action.detail}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );

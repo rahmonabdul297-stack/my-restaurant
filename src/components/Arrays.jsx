@@ -1,17 +1,28 @@
 import { BiSolidFoodMenu } from "react-icons/bi";
-import { FaHome, FaInstagramSquare, FaOpencart, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import {
+  FaHome,
+  FaInstagramSquare,
+  FaOpencart,
+  FaTwitter,
+  FaWhatsapp,
+} from "react-icons/fa";
 import { GiHotMeal } from "react-icons/gi";
 import { GrContactInfo, GrGroup, GrOverview } from "react-icons/gr";
 import { IoIosMail, IoMdPhonePortrait } from "react-icons/io";
-import {  MdEmail, MdOutlineFacebook } from "react-icons/md";
+import { MdEmail, MdOutlineFacebook } from "react-icons/md";
 
 export const navsArr = [
   { id: 1, icon: <FaHome />, nav: "home", Link: "/home" },
   { id: 2, icon: <GrContactInfo />, nav: "About", Link: "/about" },
   {
     id: 3,
-    nav: <FaOpencart size={25} className="font-bold text-5xl" />,
+    nav: "order food",
     Link: "/order",
+  },
+  {
+    id: 4,
+    nav: <FaOpencart  size={30}/>,
+    Link: "/food",
   },
 ];
 export const footerArr = [
@@ -19,8 +30,8 @@ export const footerArr = [
   { id: 2, icon: <GrContactInfo />, nav: "About", Link: "/about" },
   {
     id: 3,
-    nav: "order",
-    Link: "/order",
+    nav: "food",
+    Link: "/food",
   },
   {
     id: 4,
@@ -29,33 +40,43 @@ export const footerArr = [
   },
 ];
 export const footerContactArr = [
-  { id: 1, icon: <IoMdPhonePortrait  />, nav: "+2347089136508", Link: "tel:+2347089136508" },
-  { id: 2, icon: <FaWhatsapp  />, nav: "+2347089136508", Link: "tel:+2347089136508" },
+  {
+    id: 1,
+    icon: <IoMdPhonePortrait />,
+    nav: "+2347089136508",
+    Link: "tel:+2347089136508",
+  },
+  {
+    id: 2,
+    icon: <FaWhatsapp />,
+    nav: "+2347089136508",
+    Link: "tel:+2347089136508",
+  },
   {
     id: 3,
-    icon: <IoIosMail    />,
+    icon: <IoIosMail />,
     nav: "pixelplateKitchen@gmail.com",
     Link: "mailto:pixelplateKitchen@gmail.com",
   },
   {
     id: 4,
-    icon: <MdOutlineFacebook  />,
+    icon: <MdOutlineFacebook />,
     nav: "facebook",
     Link: "",
   },
-  
+
   {
     id: 5,
-    icon: <FaInstagramSquare  />,
+    icon: <FaInstagramSquare />,
     nav: "instagram",
     Link: "",
   },
   {
     id: 6,
-    icon: <FaTwitter   />,
+    icon: <FaTwitter />,
     nav: "facebook",
     Link: "",
-  }, 
+  },
 ];
 export const AdminDashboardArr = [
   {

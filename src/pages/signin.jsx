@@ -7,9 +7,9 @@ import {
   successNotification,
 } from "../utils/helper";
 import { normalizeLoginResponse, saveSession } from "../utils/authSession";
+import { API_ENDPOINTS } from "../config/api";
 
-const USER_LOGIN_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/user-login";
+const USER_LOGIN_URL = API_ENDPOINTS.userLogin;
 
 const Signin = () => {
   const {

@@ -5,9 +5,9 @@ import { Apploader } from "../components/Apploader";
 import { ThemeContext } from "../context/context";
 
 import { loadSession } from "../utils/authSession";
+import { API_ENDPOINTS } from "../config/api";
 
-const USERS_URL =
-  "https://restaurant-management-f9kx.onrender.com/api/v1/users";
+const USERS_URL = API_ENDPOINTS.users;
 
 const normaliseUsersPayload = (payload) => {
   if (!payload) return [];

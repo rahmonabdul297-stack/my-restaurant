@@ -16,6 +16,14 @@ const Adminlogin = () => {
 
   const HandleAdminSignin = () => {
     if (username === userName && password === Password) {
+      try {
+        window.localStorage.setItem(
+          "restaurant_admin_session",
+          JSON.stringify({ isAdmin: true, username }),
+        );
+      } catch {
+        // ignore storage errors
+      }
       navigate("/dashboard");
     } else {
       errorNotification("you're not an admin!");

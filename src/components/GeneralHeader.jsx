@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import "./index.css";
 import Logo from "./Logo";
 import { navsArr } from "./Arrays";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { ThemeContext } from "../context/context";
 import { clearSession } from "../utils/authSession";
@@ -16,6 +16,7 @@ export const GeneralHeader = () => {
   const [Selected, setSelected] = useState();
   const [ShowMenu, setShowMenu] = useState(false);
   const [AccountDrop, setAccountDrop] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const {
     dark,
     setDark,
@@ -36,6 +37,31 @@ export const GeneralHeader = () => {
   const handleMenuDrop = () => {
     setShowMenu((prev) => !prev);
   };
+
+  useEffect(() => {
+    const readCartCount = () => {
+      try {
+        const storedCart = window.localStorage.getItem("food-cart");
+        if (!storedCart) return 0;
+        const parsed = JSON.parse(storedCart);
+        return Array.isArray(parsed)
+          ? parsed.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+          : 0;
+      } catch {
+        return 0;
+      }
+    };
+
+    setCartCount(readCartCount());
+    const handleStorage = () => setCartCount(readCartCount());
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("cart:update", handleStorage);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("cart:update", handleStorage);
+    };
+  }, []);
+
   return (
     <div
       className={`${dark ? "bg-AppBlack" : "bg-AppWhite "} overflow-x-auto shadow-2xl w-full fixed z-20 text-[12px]`}
@@ -46,7 +72,7 @@ export const GeneralHeader = () => {
         <div
           className={` ${dark ? "text-AppWhite " : "text-AppBlack "} flex items-center justify-between gap-10 font-bold capitalize`}
         >
-          {navsArr.slice(0, 2).map((item) => (
+          {navsArr.slice(0, 3).map((item) => (
             <Link
               key={item.id}
               to={item.Link}
@@ -74,7 +100,7 @@ export const GeneralHeader = () => {
           </div>
           <div className=" relative">
             {" "}
-            {navsArr.slice(2, 3).map((item) => (
+            {navsArr.slice(3, 4).map((item) => (
               <Link
                 key={item.id}
                 to={item.Link}
@@ -89,8 +115,8 @@ export const GeneralHeader = () => {
               </Link>
             ))}
           </div>
-          <div className="absolute right-20 top-3 bg-AppRed h-5 w-5  rounded-[50%] text-white text-center">
-            {"0"}
+          <div className="absolute right-20 top-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-AppRed px-1 text-center text-[10px] font-bold text-white">
+            {cartCount}
           </div>
           <div onClick={() => setdrop((prev) => !prev)}>
             <IoSettings size={20} />
@@ -119,8 +145,24 @@ export const GeneralHeader = () => {
                 ""
               )}
             </div>
-            <Link to="/adminlogin" className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray rounded-lg"><FaSignInAlt /><span>sign-in as admin</span></Link>
-            <div className="px-1 py-1  w-full hover:bg-AppGray rounded-lg" onClick={()=>setDark((prev) => !prev)}>
+            <Link
+              to="/profile"
+              className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray rounded-lg"
+            >
+              <IoIosContact />
+              <span>view profile</span>
+            </Link>
+            <Link
+              to="/adminlogin"
+              className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray rounded-lg"
+            >
+              <FaSignInAlt />
+              <span>sign-in as admin</span>
+            </Link>
+            <div
+              className="px-1 py-1  w-full hover:bg-AppGray rounded-lg"
+              onClick={() => setDark((prev) => !prev)}
+            >
               {dark ? (
                 <span className="w-full flex items-center gap-2">
                   {" "}
@@ -150,7 +192,7 @@ export const GeneralHeader = () => {
         <Logo />
         <div className={`relative ${dark ? "text-AppWhite" : ""}`}>
           {" "}
-          {navsArr.slice(2, 3).map((item) => (
+          {navsArr.slice(3, 4).map((item) => (
             <Link
               key={item.id}
               to={item.Link}
@@ -165,127 +207,169 @@ export const GeneralHeader = () => {
             </Link>
           ))}
         </div>
-        <div className="absolute right-2 top-3 bg-AppRed h-5 w-5 text-center rounded-[50%] text-white">
-          {"0"}
+        <div className="absolute right-2 top-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-AppRed px-1 text-[10px] font-bold text-white">
+          {cartCount}
         </div>
       </section>
       <section
         className={
           ShowMenu
-            ? `flex lg:hidden fixed top-[6%] h-screen w-full mx-auto  ${dark ? "bg-AppBlack/55 text-AppWhite" : "bg-AppWhite/55 text-AppBlack"}`
+            ? `fixed left-0 top-[6%] z-30 flex h-screen w-full lg:hidden ${dark ? "bg-AppBlack/70 text-AppWhite" : "bg-AppWhite/70 text-AppBlack"}`
             : "hidden"
         }
       >
         <div
-          className={`h-screen w-[500px] mx-auto flex flex-col py-20 px-5 ${dark ? "bg-AppBlack text-AppWhite" : "bg-AppWhite text-AppBlack"}`}
+          className={`ml-auto flex h-screen w-[92vw] max-w-[420px] flex-col overflow-y-auto border-l px-4 py-5 shadow-2xl ${dark ? "border-slate-800 bg-AppBlack text-AppWhite" : "border-slate-200 bg-AppWhite text-AppBlack"}`}
         >
           <div
-            className="flex justify-between font-bold text-xl capitalize items-center py-4"
+            className="flex items-center justify-between rounded-2xl border border-AppRed/20 bg-AppRed/5 px-3 py-3"
             onClick={() => setAccountDrop((prev) => !prev)}
           >
-            <div className="flex items-center gap-4">
-              {" "}
-              <IoIosContact size={50} /> <span>accounts</span>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-AppRed/15 text-lg font-semibold text-AppRed">
+                {first_name ? (
+                  first_name.charAt(0).toUpperCase()
+                ) : (
+                  <IoIosContact size={22} />
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold">
+                  {first_name || "Account"}
+                </p>
+                <p className="text-xs opacity-70">
+                  {email || "Sign in to continue"}
+                </p>
+              </div>
             </div>
-            <GoTriangleDown />
+            <GoTriangleDown
+              className={`transition ${AccountDrop ? "rotate-180" : ""}`}
+            />
           </div>
-          <div
-            className={
-              AccountDrop
-                ? "flex items-center my-2 border-b hover:border-AppRed":"hidden"
-            }
-          >
-            {first_name ? <IoIosContact size={50} /> : ""}
-            <div className="flex flex-col">
-              <div className=""> {email} </div>
-              <div className="text-AppGray"> {first_name}</div>
+
+          {AccountDrop ? (
+            <div className="mt-3 rounded-2xl border border-AppRed/20 bg-AppRed/5 p-3 text-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-AppRed/15 text-lg font-semibold text-AppRed">
+                  {first_name ? (
+                    first_name.charAt(0).toUpperCase()
+                  ) : (
+                    <IoIosContact size={20} />
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold">{first_name || "Guest"}</p>
+                  <p className="text-xs opacity-70">
+                    {email || "No profile yet"}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2">
+                {first_name ? (
+                  <Link
+                    to="/profile"
+                    className="flex-1 rounded-xl bg-AppBlack px-3 py-2 text-center text-sm font-semibold text-white"
+                    onClick={handleMenuDrop}
+                  >
+                    View profile
+                  </Link>
+                ) : (
+                  <Link
+                    to="/signin"
+                    className="flex-1 rounded-xl bg-AppBlack px-3 py-2 text-center text-sm font-semibold text-white"
+                    onClick={handleMenuDrop}
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-AppRed/20 bg-AppRed/5 p-2">
+            <input
+              type="search"
+              placeholder="Search meals..."
+              className="w-full bg-transparent px-2 py-2 text-sm outline-none"
+            />
+            <div className="rounded-xl bg-AppRed px-3 py-2 text-sm font-semibold text-white">
+              Go
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="search"
-              placeholder="search meals..."
-              id=""
-              className="outline-0 border-AppRed w-[70%] "
-            />
-            <div
-              className={`${dark ? "bg-AppRed" : "bg-AppBlack "} text-AppWhite px-3 py-1 rounded-2xl text-center text-2xl content-['search']`}
-            >
-              search
-            </div>
-          </div>
-          <div className="my-2 flex flex-col gap-5 capitalize font-bold text-2xl">
-            {" "}
-            {navsArr.slice(0, 2).map((item) => (
-              <div
-                className="flex items-center gap-5 hover:border-AppRed border-b py-2"
+          <div className="mt-5 flex flex-col gap-2">
+            {navsArr.map((item) => (
+              <Link
                 key={item.id}
+                to={item.Link}
+                className={`flex items-center justify-between rounded-2xl px-3 py-3 text-base font-semibold transition ${Selected === item.id ? "bg-AppRed text-white" : dark ? "bg-slate-900/80 text-AppWhite" : "bg-slate-100 text-AppBlack"}`}
+                onClick={() => {
+                  setSelected(item.id);
+                  handleMenuDrop();
+                }}
               >
-                <div>{item.icon}</div>
-                <Link
-                  to={item.Link}
-                  className={Selected === item.id ? "text-AppRed" : ""}
-                  onClick={() => setSelected(item.id) & handleMenuDrop()}
-                >
-                  {item.nav}
-                </Link>
-              </div>
+                <span className="flex items-center gap-3">
+                  <span>{item.icon}</span>
+                  <span>{item.nav}</span>
+                </span>
+                <span className="text-xs opacity-70">
+                  {item.id === 4 ? `(${cartCount})` : ""}
+                </span>
+              </Link>
             ))}
           </div>
 
-          <div
-            className="capitalize font-bold text-2xl hover:border-AppRed border-b py-3"
-            onClick={() => {
-             setDark((prev) => !prev);
-              handleMenuDrop();
-            }}
-          >
-            {dark ? (
-              <span className="flex items-center gap-5 ">
-                {" "}
-                <MdLightMode />
-                Light Mode
-              </span>
-            ) : (
-              <span className="flex items-center gap-5">
-                <MdDarkMode /> Dark Mode
-              </span>
-            )}
+          <div className="mt-5 rounded-2xl border border-AppRed/20 bg-AppRed/5 p-3">
+            <button
+              type="button"
+              className={`flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-semibold ${dark ? "bg-slate-900/80 text-AppWhite" : "bg-white text-AppBlack"}`}
+              onClick={() => {
+                setDark((prev) => !prev);
+                handleMenuDrop();
+              }}
+            >
+              {dark ? <MdLightMode /> : <MdDarkMode />}
+              {dark ? "Light mode" : "Dark mode"}
+            </button>
+            <Link
+              to="/adminlogin"
+              className="mt-2 flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold hover:bg-AppRed/10"
+              onClick={handleMenuDrop}
+            >
+              <FaSignInAlt />
+              Sign in as admin
+            </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="my-4 flex items-center gap-2.5">
-              {first_name ? (
-                <i className="text-xl font-serif">
-                  welcome, {first_name?.slice(0, 11)}!
-                </i>
-              ) : (
-                <Link to="/signup" className="sec-btn rounded font-bold border">
-                  sign up
-                </Link>
-              )}
-            </div>
 
-            <div className="my-4 flex items-center gap-2.5 ">
-              {first_name ? (
-                <Link
-                  to="/signin"
-                  className="pry-btn rounded font-bold border w-[150px]"
-                  onClick={handleLogout}
-                >
-                  log out
-                </Link>
-              ) : (
-                <Link
-                  to="/signin"
-                  className="pry-btn rounded font-bold border w-[150px]"
-                >
-                  sign in
-                </Link>
-              )}
-            </div>
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-AppRed/10 pt-4">
+            {first_name || email ? (
+              <button
+                type="button"
+                onClick={() => {
+                  handleLogout();
+                  handleMenuDrop();
+                }}
+                className="rounded-2xl border border-AppRed/20 px-3 py-2 text-sm font-semibold text-AppRed"
+              >
+                Log out
+              </button>
+            ) : (
+              <Link
+                to="/signin"
+                className="rounded-2xl border border-AppRed/20 px-3 py-2 text-sm font-semibold text-AppRed"
+                onClick={handleMenuDrop}
+              >
+                Sign in
+              </Link>
+            )}
+            <Link
+              to="/signup"
+              className="rounded-2xl bg-AppRed px-3 py-2 text-sm font-semibold text-white"
+              onClick={handleMenuDrop}
+            >
+              Create account
+            </Link>
           </div>
-          <Link to="/adminlogin">sign-in as admin</Link>
         </div>
       </section>
     </div>

@@ -5,9 +5,10 @@ import {
   successNotification,
 } from "../utils/helper";
 import { ThemeContext } from "../context/context";
+import { API_ENDPOINTS } from "../config/api";
 
-const MENU_POST_URL = "https://restaurant-management-f9kx.onrender.com/api/v1/menu";
-const MENUS_URL = "https://restaurant-management-f9kx.onrender.com/api/v1/menus";
+const MENU_POST_URL = API_ENDPOINTS.menu;
+const MENUS_URL = API_ENDPOINTS.menus;
 
 const AdminMenu = () => {
   const { dark } = useContext(ThemeContext);
@@ -57,7 +58,9 @@ const AdminMenu = () => {
       const payload = {
         name: menuForm.name.trim(),
         category: menuForm.category.trim(),
-        ...(menuForm.menu_id.trim() ? { menu_id: menuForm.menu_id.trim() } : {}),
+        ...(menuForm.menu_id.trim()
+          ? { menu_id: menuForm.menu_id.trim() }
+          : {}),
       };
 
       const request = await fetch(MENU_POST_URL, {
@@ -102,101 +105,160 @@ const AdminMenu = () => {
 
   return (
     <div
-      className={`min-h-screen py-20 `}
+      className={`min-h-screen py-4 sm:py-6 ${dark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"}`}
     >
-      <section className="px-10 py-20 ml-20 lg:ml-52 flex flex-col lg:grid grid-cols-4 gap-5">
-        <h4 className="col-span-4">Create Menu IDs For Food Posting</h4>
-
-        <div className="col-span-2">
-          <label>Menu name</label>
-          <input
-            type="text"
-            placeholder="Breakfast / Dinner / Drinks..."
-            className="w-full"
-            value={menuForm.name}
-            onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
-          />
-          <div className="text-AppRed">{warning}</div>
-        </div>
-
-        <div className="col-span-2">
-          <label>Menu category</label>
-          <input
-            type="text"
-            placeholder="Main course / Starter / Dessert..."
-            className="w-full"
-            value={menuForm.category}
-            onChange={(e) => setMenuForm({ ...menuForm, category: e.target.value })}
-          />
-          <div className="text-AppRed">{warning}</div>
-        </div>
-
-        <div className="col-span-2">
-          <label>Menu ID (optional)</label>
-          <input
-            type="text"
-            placeholder="Leave empty to generate automatically"
-            className="w-full"
-            value={menuForm.menu_id}
-            onChange={(e) => setMenuForm({ ...menuForm, menu_id: e.target.value })}
-          />
-        </div>
-
-        <div className="col-span-2 flex items-end">
-          <button
-            type="submit"
-            onClick={isCreating ? null : handleCreateMenu}
-            className="bg-AppBlack w-full text-AppWhite py-2 rounded-2xl capitalize font-bold text-xl"
-          >
-            {isCreating ? "creating..." : "create menu"}
-          </button>
-        </div>
-
-        <div className="col-span-4 mt-8">
-          <div className="flex items-center justify-between">
-            <h5 className="font-bold">Reusable Menu IDs</h5>
-            <button
-              type="button"
-              onClick={isLoadingMenus ? null : loadMenus}
-              className="bg-AppRed text-AppWhite py-1.5 px-3 rounded-xl text-sm"
+      <section className="mx-auto max-w-7xl space-y-6 px-1 sm:px-2 lg:px-0">
+        <div
+          className={`rounded-[24px] border p-5 shadow-sm sm:p-6 ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+        >
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p
+                className={`text-sm font-semibold uppercase tracking-[0.25em] ${dark ? "text-slate-400" : "text-slate-500"}`}
+              >
+                Menu setup
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+                Create menu IDs for food posting
+              </h2>
+              <p
+                className={`mt-2 max-w-2xl text-sm ${dark ? "text-slate-400" : "text-slate-600"}`}
+              >
+                Build reusable menu categories so your food posting form stays
+                quick and organized.
+              </p>
+            </div>
+            <div
+              className={`rounded-2xl border px-4 py-3 text-sm ${dark ? "border-slate-800 bg-slate-800/70" : "border-slate-100 bg-slate-50"}`}
             >
-              {isLoadingMenus ? "refreshing..." : "refresh list"}
-            </button>
+              Tip: copy a menu ID and reuse it while posting meals.
+            </div>
           </div>
-          {!menus.length ? (
-            <div className={`mt-4 text-sm ${dark ? "text-AppGray" : "text-AppBlack/70"}`}>
-              No menus yet. Create one above and it will appear here.
+        </div>
+
+        <div
+          className={`grid gap-6 rounded-[24px] border p-4 shadow-sm sm:p-6 lg:grid-cols-[0.95fr_1.05fr] ${dark ? "border-slate-800 bg-slate-900/80" : "border-slate-200 bg-white"}`}
+        >
+          <form onSubmit={handleCreateMenu} className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Create a new menu</h3>
+              <p
+                className={`text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+              >
+                A clear menu structure helps your admin dashboard stay easy to
+                manage.
+              </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-4">
-              {menus.map((menu, idx) => {
-                const menuId = menu.menu_id || menu.id || "";
-                return (
-                  <div
-                    key={menuId || idx}
-                    className={`rounded-xl p-3 border ${
-                      dark
-                        ? "border-AppGray/40 bg-AppBlack/40"
-                        : "border-AppBlack/15 bg-AppWhite"
-                    }`}
-                  >
-                    <div className="font-bold">{menu.name || "Unnamed menu"}</div>
-                    <div className={`text-sm ${dark ? "text-AppGray" : "text-AppBlack/70"}`}>
-                      Category: {menu.category || "-"}
-                    </div>
-                    <div className="text-sm break-all mt-1">menu_id: {menuId || "-"}</div>
-                    <button
-                      type="button"
-                      onClick={() => copyMenuId(menuId)}
-                      className="mt-2 bg-AppBlack text-AppWhite px-2 py-1 rounded-lg text-xs"
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label className="mb-2 block text-sm font-medium">
+                  Menu name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Breakfast / Dinner / Drinks..."
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={menuForm.name}
+                  onChange={(e) =>
+                    setMenuForm({ ...menuForm, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-2 block text-sm font-medium">
+                  Menu category
+                </label>
+                <input
+                  type="text"
+                  placeholder="Main course / Starter / Dessert..."
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={menuForm.category}
+                  onChange={(e) =>
+                    setMenuForm({ ...menuForm, category: e.target.value })
+                  }
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="mb-2 block text-sm font-medium">
+                  Menu ID (optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Leave empty to generate automatically"
+                  className="w-full rounded-2xl border px-3 py-2"
+                  value={menuForm.menu_id}
+                  onChange={(e) =>
+                    setMenuForm({ ...menuForm, menu_id: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+            <div className="text-sm text-AppRed">{warning}</div>
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white"
+              disabled={isCreating}
+            >
+              {isCreating ? "Creating..." : "Create menu"}
+            </button>
+          </form>
+
+          <div>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Reusable menu IDs</h3>
+              <button
+                type="button"
+                onClick={isLoadingMenus ? null : loadMenus}
+                className={`rounded-2xl px-3 py-2 text-sm font-semibold ${dark ? "bg-slate-800 text-slate-100" : "bg-slate-100 text-slate-700"}`}
+              >
+                {isLoadingMenus ? "Refreshing..." : "Refresh list"}
+              </button>
+            </div>
+            {!menus.length ? (
+              <div
+                className={`rounded-2xl border px-4 py-8 text-sm ${dark ? "border-slate-800 bg-slate-950/60 text-slate-400" : "border-slate-200 bg-slate-50 text-slate-500"}`}
+              >
+                No menus yet. Create one above and it will appear here.
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {menus.map((menu, idx) => {
+                  const menuId = menu.menu_id || menu.id || "";
+                  return (
+                    <div
+                      key={menuId || idx}
+                      className={`rounded-2xl border p-4 ${dark ? "border-slate-800 bg-slate-950/60" : "border-slate-200 bg-slate-50"}`}
                     >
-                      copy Id
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <div className="font-semibold">
+                            {menu.name || "Unnamed menu"}
+                          </div>
+                          <div
+                            className={`text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                          >
+                            Category: {menu.category || "-"}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copyMenuId(menuId)}
+                          className="rounded-xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
+                        >
+                          Copy ID
+                        </button>
+                      </div>
+                      <div
+                        className={`mt-3 break-all text-sm ${dark ? "text-slate-400" : "text-slate-500"}`}
+                      >
+                        menu_id: {menuId || "-"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </div>
