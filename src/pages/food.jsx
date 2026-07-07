@@ -96,6 +96,76 @@ const FoodPage = () => {
     0,
   );
 
+  const ensureTableExists = async () => {
+    const storedTableId = window.localStorage.getItem("restaurant-table-id");
+    if (storedTableId) return storedTableId;
+
+    const tableCandidates = [
+      {
+        endpoint: API_ENDPOINTS.table,
+        payload: { table_id: "table-1", name: "table-1", status: "occupied" },
+      },
+      {
+        endpoint: API_ENDPOINTS.tables,
+        payload: { table_id: "table-1", name: "table-1", status: "occupied" },
+      },
+      {
+        endpoint: API_ENDPOINTS.table,
+        payload: { table_id: "table-1", name: "table-1" },
+      },
+      {
+        endpoint: API_ENDPOINTS.tables,
+        payload: { table_id: "table-1", name: "table-1" },
+      },
+      {
+        endpoint: API_ENDPOINTS.table,
+        payload: { id: "table-1", name: "table-1", status: "occupied" },
+      },
+      {
+        endpoint: API_ENDPOINTS.tables,
+        payload: { id: "table-1", name: "table-1", status: "occupied" },
+      },
+    ];
+
+    for (const candidate of tableCandidates) {
+      try {
+        const response = await apiRequest(candidate.endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: candidate.payload,
+        });
+
+        if (response.ok || response.status === 201) {
+          const tableData =
+            response.data && typeof response.data === "object"
+              ? response.data
+              : null;
+          const nextTableId =
+            tableData?.table_id ||
+            tableData?.id ||
+            tableData?.name ||
+            candidate.payload.table_id ||
+            candidate.payload.id ||
+            "table-1";
+          window.localStorage.setItem(
+            "restaurant-table-id",
+            String(nextTableId),
+          );
+          return String(nextTableId);
+        }
+      } catch (error) {
+        console.warn("Table creation attempt failed", error);
+      }
+    }
+
+    const fallbackTableId = "table-1";
+    window.localStorage.setItem("restaurant-table-id", fallbackTableId);
+    return fallbackTableId;
+  };
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (!cart.length) {
@@ -117,9 +187,11 @@ const FoodPage = () => {
       .map((item) => `${item.name} x${item.quantity}`)
       .join(" | ");
 
+    const tableId = await ensureTableExists();
+
     const payload = {
       order_id: `ord-${Date.now()}`,
-      table_id: "table-1",
+      table_id: tableId,
       order_date: new Date().toISOString(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

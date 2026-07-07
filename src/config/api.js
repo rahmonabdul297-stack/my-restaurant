@@ -28,6 +28,8 @@ export const API_ENDPOINTS = {
     buildApiUrl(`/food-update/${encodeURIComponent(String(foodId).trim())}`),
   foodItem: (foodId) =>
     buildApiUrl(`/food/${encodeURIComponent(String(foodId).trim())}`),
+  table: buildApiUrl(import.meta.env.VITE_TABLE_ENDPOINT || "/table"),
+  tables: buildApiUrl(import.meta.env.VITE_TABLES_ENDPOINT || "/tables"),
   order: buildApiUrl("/order"),
   orders: buildApiUrl("/orders"),
   user: buildApiUrl("/user"),

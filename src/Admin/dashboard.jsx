@@ -194,7 +194,7 @@ const AdminDashboard = () => {
                 Operations Center
               </div>
               <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">
-                Ecommerce Admin Dashboard
+                PIxelplate Admin Dashboard
               </h2>
               <p
                 className={`mt-3 text-sm sm:text-base ${dark ? "text-slate-300" : "text-slate-200"}`}

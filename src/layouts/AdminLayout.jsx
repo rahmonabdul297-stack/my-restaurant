@@ -130,7 +130,7 @@ const AdminLayout = () => {
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">
-              {email ? email.slice(0, 18) : "Unknown user"}
+              {email ? email.slice(0,14) : "Unknown user"}
             </div>
             <div
               className={`text-xs ${dark ? "text-slate-400" : "text-slate-500"}`}
@@ -157,7 +157,7 @@ const AdminLayout = () => {
         <div className="mt-4 space-y-3">{renderNavLinks(true)}</div>
       </aside>
 
-      <main className="w-full pt-16 lg:ml-64">
+      <main className="w-[80%] pt-16 lg:ml-64">
         <div className="mx-auto max-w-7xl overflow-x-hidden px-3 py-4 sm:px-4 lg:px-6">
           <Outlet />
         </div>

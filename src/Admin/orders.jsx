@@ -47,7 +47,7 @@ const OrdersPage = () => {
             <Apploader size={50} />
           </div>
         ) : orders.length ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid  gap-4 lg:grid-cols-2">
             {orders.map((order, index) => (
               <div
                 key={order.id || index}
