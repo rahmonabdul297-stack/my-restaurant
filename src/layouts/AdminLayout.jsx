@@ -157,7 +157,7 @@ const AdminLayout = () => {
         <div className="mt-4 space-y-3">{renderNavLinks(true)}</div>
       </aside>
 
-      <main className="w-[80%] pt-16 lg:ml-64">
+      <main className="w-full lg:w-[80%] pt-16 lg:ml-64">
         <div className="mx-auto max-w-7xl overflow-x-hidden px-3 py-4 sm:px-4 lg:px-6">
           <Outlet />
         </div>

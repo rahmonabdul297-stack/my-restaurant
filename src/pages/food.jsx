@@ -102,7 +102,7 @@ const FoodPage = () => {
 
     const tableCandidates = [
       {
-        endpoint: API_ENDPOINTS.table,
+        endpoint: API_ENDPOINTS.tables,
         payload: { table_id: "table-1", name: "table-1", status: "occupied" },
       },
       {
@@ -110,7 +110,7 @@ const FoodPage = () => {
         payload: { table_id: "table-1", name: "table-1", status: "occupied" },
       },
       {
-        endpoint: API_ENDPOINTS.table,
+        endpoint: API_ENDPOINTS.tables,
         payload: { table_id: "table-1", name: "table-1" },
       },
       {
@@ -118,7 +118,7 @@ const FoodPage = () => {
         payload: { table_id: "table-1", name: "table-1" },
       },
       {
-        endpoint: API_ENDPOINTS.table,
+        endpoint: API_ENDPOINTS.tables,
         payload: { id: "table-1", name: "table-1", status: "occupied" },
       },
       {
@@ -191,10 +191,10 @@ const FoodPage = () => {
 
     const payload = {
       order_id: `ord-${Date.now()}`,
-      table_id: tableId,
-      order_date: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      table_id: "6a4d70cb7dded9b94e630348",
+      order_date: new Date().toString(),
+      created_at: new Date().toString(),
+      updated_at: new Date().toString(),
       customer_name: customerName.trim(),
       phone: customerPhone.trim(),
       address: customerAddress.trim(),
