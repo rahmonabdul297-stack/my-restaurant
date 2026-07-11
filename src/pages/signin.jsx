@@ -112,9 +112,9 @@ const Signin = () => {
       <form
         action=""
         onSubmit={handlesignin}
-        className={`h-max mx-auto flex flex-col gap-5 py-10 px-5 border-2 rounded-2xl col-span-2 my-auto ${
+        className={`h-max mx-auto flex flex-col gap-5 py-10 px-5 rounded-2xl col-span-2 my-auto ${
           dark
-            ? "border-AppGray bg-AppBlack/60"
+            ? "border-AppWhite bg-transparent"
             : "border-AppBlack/10 bg-AppWhite"
         }`}
       >
@@ -154,13 +154,13 @@ const Signin = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`${dark ? "bg-AppBlack" : "bg-AppRed"} text-center py-2 text-AppWhite text-xl capitalize rounded-2xl w-full border-0 cursor-pointer disabled:opacity-60`}
+          className={`bg-AppBlack hover:bg-AppRed text-center py-2 text-AppWhite text-xl capitalize rounded-2xl w-full border-0 cursor-pointer disabled:opacity-60`}
         >
           {isSubmitting ? "Signing in..." : "Sign in"}
         </button>
-        <div className={`capitalize ${dark ? "text-AppGray" : ""}`}>
+        <div className={`capitalize ${dark ? "text-AppWhite" : ""}`}>
           you do not have an existing account ?{" "}
-          <Link to="/signup" className="text-blue-700 ">
+          <Link to="/signup" className="text-AppRed">
             create an account
           </Link>
         </div>

@@ -305,7 +305,7 @@ const HomePage = () => {
               {mobileMealCount > 1 ? (
                 <p
                   className={`mt-2 text-center text-xs ${
-                    dark ? "text-AppGray" : "text-AppBlack/60"
+                    dark ? "text-AppRed" : "text-AppBlack/60"
                   }`}
                 >
                   Swipe the card or use arrows · {mobileMealIndex + 1} /{" "}

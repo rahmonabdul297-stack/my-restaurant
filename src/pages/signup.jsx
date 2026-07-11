@@ -99,9 +99,9 @@ const Signup = () => {
     <div className="container py-10 lg:py-0">
       <form
         action=""
-        className={`h-max mx-auto flex flex-col gap-5 py-10 px-5 border-2 rounded-2xl my-10 ${
+        className={`h-max mx-auto flex flex-col gap-5 py-10 px-5  rounded-2xl my-10 ${
           dark
-            ? "border-AppGray bg-AppBlack/60"
+            ? "border-AppCream bg-transparent"
             : "border-AppBlack/10 bg-AppWhite"
         }`}
       >
@@ -155,13 +155,13 @@ const Signup = () => {
         <div className="field">
           {" "}
           <label htmlFor="">password</label>
-          <div className="flex items-center gap-3 border-2  rounded-2xl">
+          <div className={`${dark?"bg-AppBlack/60 ":""} flex items-center gap-3  rounded-2xl`}>
             <input
               type={display ? "text" : "password"}
               placeholder="set your password"
               required
               onChange={(e) => setpassword(e.target.value)}
-              className="w-[90%] outline-0 border-2 border-AppWhite"
+              className="w-[90%] outline-0 "
             />
             <div onClick={() => setdisplay((prev) => !prev)}>
               {display ? <BsFillEyeFill /> : <BsFillEyeSlashFill />}
@@ -173,13 +173,13 @@ const Signup = () => {
         <div className="field">
           {" "}
           <label htmlFor="">Confirm password</label>
-          <div className="flex items-center gap-3 border-2  rounded-2xl">
+          <div className={`${dark?"bg-AppBlack/60 ":""} flex items-center gap-3  rounded-2xl`}>
             <input
               type={display ? "text" : "password"}
               placeholder="Confirm your password"
               required
               onChange={(e) => setconfirmPass(e.target.value)}
-              className="w-[90%] outline-0 border-2 border-AppWhite"
+              className="w-[90%] outline-0"
             />
             <div onClick={() => setdisplay((prev) => !prev)}>
               {display ? <BsFillEyeFill /> : <BsFillEyeSlashFill />}
@@ -204,7 +204,7 @@ const Signup = () => {
           ))}
         </div>
         <div
-          className={`${dark ? "bg-AppBlack" : "bg-AppRed"} text-center py-2 text-AppWhite text-xl capitalize rounded-2xl w-full `}
+          className={`bg-AppBlack hover:bg-AppRed text-center py-2 text-AppWhite text-xl capitalize rounded-2xl w-full `}
           onClick={handleSignUp}
         >
           {isSubmitting ? (
@@ -218,7 +218,7 @@ const Signup = () => {
         <div className="capitalize">
           {" "}
           Already have an account ?{" "}
-          <Link to="/signin" className="text-blue-700 ">
+          <Link to="/signin" className="text-AppRed ">
             sign in
           </Link>
         </div>

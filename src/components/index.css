@@ -29,7 +29,7 @@
   --color-AppWhite: #F1E7D6;
 
   /* Main Background */
-  --color-AppBlack: #121212;
+  --color-AppBlack: #0F182C;
 
   /* Secondary Text */
   --color-AppGray: #222;
@@ -178,14 +178,14 @@ html[data-theme="dark"] label,
 html[data-theme="dark"] .field label {
   @apply text-AppWhite;
 }
-html[data-theme=""] input,
-html[data-theme=""] select,
-html[data-theme=""] textarea {
-  @apply border-AppGray bg-AppBlack/50 text-AppWhite;
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  @apply border-AppGray bg-AppBlack/60 text-AppWhite;
 }
 html[data-theme="dark"] input::placeholder,
 html[data-theme="dark"] textarea::placeholder {
-  @apply text-AppGray;
+  @apply text-AppWhite/50;
 }
 
 html[data-theme="light"] body {

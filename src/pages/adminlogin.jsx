@@ -32,30 +32,30 @@ const Adminlogin = () => {
   const { dark } = useContext(ThemeContext);
   return (
     <div className="py-40">
-      <div className="mx-auto text-AppBlack w-[90%] lg:w-[500px] flex flex-col gap-5 items-center bg-AppWhite p-5 rounded-2xl border-2 border-AppBlack">
-        <h2 className="uppercase text-xl font-bold">login as Admin</h2>
+      <div className="mx-auto text-AppBlack w-[90%] lg:w-[500px] flex flex-col gap-5 items-center bg-transparent p-5 rounded-2xl">
+        <h2 className="uppercase text-xl font-bold text-AppCream">login as Admin</h2>
         <div className="w-full flex flex-col ">
           <label htmlFor="">username</label>
           <input type="text" onChange={(e) => setusername(e.target.value)} placeholder="Enter your username" className="bg-AppCream" />
         </div>
         <div className="w-full ">
           <label htmlFor="">password</label>
-          <div className="flex items-center gap-4 border-AppBlack border-2 rounded-2xl">
+          <div className={`flex items-center gap-4 border-AppBlack border-2 rounded-2xl ${dark ? "bg-AppBlack/60" : "bg-AppWhite"}`}>
             {" "}
             <input
               type={Display ? "text" : "password"}
-              className="w-[90%] outline-AppWhite border-AppWhite"
+              className="w-[90%] outline-AppWhite border-0 border-AppWhite"
               onChange={(e) => setpassword(e.target.value)}
                placeholder="Enter your password"
             />
-            <div onClick={() => setDisplay((prev) => !prev)}>
+            <div onClick={() => setDisplay((prev) => !prev)}  className={dark ? "text-AppWhite" : "text-AppBlack"} >
               {Display ? <MdOutlineRemoveRedEye /> : <LuEyeClosed />}
             </div>
           </div>
         </div>
 
         <div
-          className={`w-full ${dark ? "bg-AppBlack" : "bg-AppRed"} text-AppWhite text-center py-3 rounded-2xl capitalize`}
+          className="bg-AppBlack hover:bg-AppRed text-AppWhite text-center py-3 rounded-2xl capitalize w-full transition-opacity ease-in-out duration-700"
           onClick={HandleAdminSignin}
         >
           sign-in as Admin

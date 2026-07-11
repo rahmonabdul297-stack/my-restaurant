@@ -11,10 +11,11 @@ export const NotesList = () => {
       {loading ? (
         <Apploader />
       ) : error ? (
-        <AppError />
+        " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ducimus facere tenetur expedita architecto impedit, non soluta illo rem odio facilis veritatis nam quos, mollitia a voluptas tempora. Consequuntur, odio veritatis. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ducimus facere tenetur expedita architecto impedit, non soluta illo rem odio facilis veritatis nam quos, mollitia a voluptas tempora. Consequuntur, odio veritatis. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ducimus facere tenetur expedita architecto impedit, non soluta illo rem odio facilis veritatis nam quos, mollitia a voluptas tempora. Consequuntur, odio veritatis."
       ) : (
         data?.slice(7, 8).map((item) => (
           <div key={item._id}>
+           
             {/* <h3>{item.title || "No title"}</h3> */}
             <p>{item.text || "No text"}</p>
           </div>
