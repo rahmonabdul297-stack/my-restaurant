@@ -6,7 +6,7 @@ const Logo = () => {
   const {dark}=useContext(ThemeContext)
   return (
     <Link to="/" className="">
-      <img src={dark?"/public/images/new logo.png":"/images/logo.png"} alt="" className="h-16 " />
+      <img src={dark?"/images/new logo.png":"/images/logo.png"} alt="" className="h-16 " />
     </Link>
   );
 };
