@@ -33,10 +33,10 @@ const Adminlogin = () => {
   return (
     <div className="py-40">
       <div className="mx-auto text-AppBlack w-[90%] lg:w-[500px] flex flex-col gap-5 items-center bg-AppWhite p-5 rounded-2xl border-2 border-AppBlack">
-        <h2 className="uppercase text-xl font-bold">sign-in as Admin</h2>
+        <h2 className="uppercase text-xl font-bold">login as Admin</h2>
         <div className="w-full flex flex-col ">
           <label htmlFor="">username</label>
-          <input type="text" onChange={(e) => setusername(e.target.value)} />
+          <input type="text" onChange={(e) => setusername(e.target.value)} placeholder="Enter your username" className="bg-AppCream" />
         </div>
         <div className="w-full ">
           <label htmlFor="">password</label>
@@ -46,6 +46,7 @@ const Adminlogin = () => {
               type={Display ? "text" : "password"}
               className="w-[90%] outline-AppWhite border-AppWhite"
               onChange={(e) => setpassword(e.target.value)}
+               placeholder="Enter your password"
             />
             <div onClick={() => setDisplay((prev) => !prev)}>
               {Display ? <MdOutlineRemoveRedEye /> : <LuEyeClosed />}

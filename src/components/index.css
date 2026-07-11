@@ -3,11 +3,51 @@
 /* Manual dark mode: `<html class="dark">` set from ThemeContext */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
+/* @theme {
   --color-AppRed: #ec190e;
   --color-AppWhite: #eee;
   --color-AppBlack: #444;
   --color-AppGray: #aaa;
+} */
+
+ @theme {
+  --color-AppRed: #C99A2E;     
+  --color-AppWhite: #FAF6F0;    
+  --color-AppBlack: #2B2321;    
+  --color-AppGray: #8C7F75;   
+  --color-AppGold: #C99A2E; 
+  --color-AppCream: #F1E7D6;   
+} 
+
+
+
+@theme {
+  /* Primary Brand Color (Burnt Orange) */
+  --color-AppRed: #D97706;
+
+  /* Main Text */
+  --color-AppWhite: #F1E7D6;
+
+  /* Main Background */
+  --color-AppBlack: #121212;
+
+  /* Secondary Text */
+  --color-AppGray: #222;
+
+  /* Card/Section Background */
+  --color-AppLightGray: #1E1E1E;
+
+  /* Border */
+  --color-AppBorder: #3F3F46;
+
+  /* Secondary Accent (Golden Orange) */
+  --color-AppGold: #F59E0B;
+
+  /* Success */
+  --color-AppGreen: #22C55E;
+
+  /* Error/Discount */
+  --color-AppDanger: #DC2626;
 }
 
 .roboto-font {
@@ -40,7 +80,7 @@ h5 {
   @apply flex flex-col;
 }
 input,select,textarea {
-  @apply p-2 border-2 border-dotted outline-0 rounded-2xl;
+  @apply p-2 border-2 rounded-2xl outline-0 bg-AppCream;
 }
 input::placeholder {
   @apply capitalize text-AppBlack;
@@ -138,9 +178,9 @@ html[data-theme="dark"] label,
 html[data-theme="dark"] .field label {
   @apply text-AppWhite;
 }
-html[data-theme="dark"] input,
-html[data-theme="dark"] select,
-html[data-theme="dark"] textarea {
+html[data-theme=""] input,
+html[data-theme=""] select,
+html[data-theme=""] textarea {
   @apply border-AppGray bg-AppBlack/50 text-AppWhite;
 }
 html[data-theme="dark"] input::placeholder,

@@ -93,7 +93,7 @@ const AboutPage = () => {
               <p className="font-black text-AppWhite text-2xl sm:text-3xl">
                 Fresh, local ingredients
               </p>
-              <p className="mt-2 text-AppWhite/90 text-sm sm:text-base">
+              <p className="mt-2 text-AppWhite text-sm sm:text-base">
                 Quality you can taste in every forkful—grown close, cooked with
                 intent, served while it still hums.
               </p>
@@ -139,7 +139,7 @@ const AboutPage = () => {
               </div>
               <div
                 className={`mt-2 text-xs font-bold uppercase tracking-wider ${
-                  dark ? "text-AppGray" : "text-AppBlack/60"
+                  dark ? "text-AppCream" : "text-AppBlack/60"
                 }`}
               >
                 {item.label}
@@ -161,7 +161,7 @@ const AboutPage = () => {
           </h2>
           <p
             className={`mt-4 text-sm md:text-base ${
-              dark ? "text-AppGray" : "text-AppBlack/70"
+              dark ? "text-AppCream" : "text-AppBlack/70"
             }`}
           >
             Three anchors keep the menu honest—color, contrast, and the same red
@@ -195,7 +195,7 @@ const AboutPage = () => {
               </h3>
               <p
                 className={`mt-3 text-sm leading-relaxed ${
-                  dark ? "text-AppGray" : "text-AppBlack/75"
+                  dark ? "text-AppCream" : "text-AppBlack/75"
                 }`}
               >
                 {copy}
@@ -226,7 +226,7 @@ const AboutPage = () => {
             Pull up a chair—your table is waiting.
           </h3>
           <p
-            className={`mx-auto mt-3 max-w-lg text-sm ${dark ? "text-AppGray" : " text-AppBlack"}`}
+            className={`mx-auto mt-3 max-w-lg text-sm ${dark ? "text-AppCream" : " text-AppBlack"}`}
           >
             Same palette you know from the site: deep charcoal, warm gray, and
             that signal red for moments that matter.

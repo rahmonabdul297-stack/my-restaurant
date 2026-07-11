@@ -9,9 +9,9 @@ const GeneralFooter = () => {
   const { dark } = useContext(ThemeContext);
   return (
     <div
-      className={`${dark ? "bg-AppBlack text-AppWhite" : "bg-AppRed"} h-max py-10  polygons font-[ubuntu-sans-mono-font ]`}
+      className={`${dark ? "bg-AppBlack text-AppWhite border-t-AppRed border-t-4" : "bg-AppRed"} h-max py-10  polygons font-[ubuntu-sans-mono-font ]`}
     >
-      <section className="container flex flex-col lg:flex-row   gap-8 lg:gap-32">
+      <section className="container  flex flex-col lg:flex-row   gap-8 lg:gap-32">
         <div className="flex flex-col justify-center">
           <div className="text-AppWhite font-bold text-2xl capitalize">
             {" "}

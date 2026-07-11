@@ -124,43 +124,43 @@ export const GeneralHeader = () => {
           <div
             className={
               drop
-                ? `${dark ? "bg-AppBlack flex" : "bg-AppWhite"} w-[200px] h-max p-4 fixed top-16 right-0 flex flex-col items-center gap-1.5 border-l-AppBlack border-l-2`
+                ? `${dark ? "bg-AppBlack flex" : "bg-AppWhite"} w-[250px] h-max p-4 fixed top-16 right-0 flex flex-col items-center gap-1.5 border-l-AppBlack border-l-2`
                 : "hidden"
             }
           >
-            <div className="flex items-center">
-              {first_name ? <IoIosContact size={50} /> : ""}
+            <div className=" w-full flex">
+              {first_name ? <IoIosContact size={30} /> : ""}
               <div className="flex flex-col">
                 <div className=""> {email} </div>
-                <div className="text-AppGray"> {first_name}</div>
+                <div className={dark?"text-AppCream/50":"text-AppGray"}> {first_name}</div>
               </div>
             </div>
-            <div>
+            <div className="w-full flex justify-between items-center hover:bg-AppGray hover:text-AppCream px-1 py-1 rounded-lg">
               {first_name ? (
-                <Link to="/signin" className="flex items-center">
-                  <AiFillPlusCircle />
+                <Link to="/signin" className="flex items-center justify-between gap-3 " >
+                  <AiFillPlusCircle size={13}/>
                   Add new account
                 </Link>
               ) : (
                 ""
               )}
             </div>
-            <Link
+            <Link 
               to="/profile"
-              className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray rounded-lg"
+              className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray hover:text-AppCream rounded-lg"
             >
               <IoIosContact />
               <span>view profile</span>
             </Link>
             <Link
               to="/adminlogin"
-              className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray rounded-lg"
+              className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray hover:text-AppCream rounded-lg"
             >
               <FaSignInAlt />
               <span>sign-in as admin</span>
             </Link>
             <div
-              className="px-1 py-1  w-full hover:bg-AppGray rounded-lg"
+              className="px-1 py-1  w-full hover:bg-AppGray hover:text-AppCream rounded-lg"
               onClick={() => setDark((prev) => !prev)}
             >
               {dark ? (
