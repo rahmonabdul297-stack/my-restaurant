@@ -121,7 +121,7 @@ export const reviews = [
   {
     id: "rev_001",
     customer_name: "Sarah Jenkins",
-    avatar: "https://i.pravatar.cc/150?img=1",
+    avatar: "/images/150 (1).jfif",
     rating: 5,
     date: "2026-07-28T14:32:00Z",
     item_ordered: "Jollof Rice & Grilled Chicken",
@@ -130,7 +130,7 @@ export const reviews = [
   {
     id: "rev_002",
     customer_name: "David Chen",
-    avatar: "https://i.pravatar.cc/150?img=2",
+    avatar: "/images/150 (2).jfif",
     rating: 4,
     date: "2026-07-25T19:15:00Z",
     item_ordered: "Truffle Mushroom Pasta",
@@ -139,7 +139,7 @@ export const reviews = [
   {
     id: "rev_003",
     customer_name: "Amina Bello",
-    avatar: "https://i.pravatar.cc/150?img=3",
+    avatar: "/images/150 (3).jfif",
     rating: 5,
     date: "2026-07-22T20:45:00Z",
     item_ordered: "Egusi Soup & Pounded Yam",
@@ -148,7 +148,7 @@ export const reviews = [
   {
     id: "rev_004",
     customer_name: "Marcus Vance",
-    avatar: "https://i.pravatar.cc/150?img=4",
+    avatar: "/images/150 (4).jfif",
     rating: 3,
     date: "2026-07-20T12:10:00Z",
     item_ordered: "Smokey Bacon Burger",
@@ -157,7 +157,7 @@ export const reviews = [
   {
     id: "rev_005",
     customer_name: "Elena Rostova",
-    avatar: "https://i.pravatar.cc/150?img=5",
+    avatar: "/images/150 (5).jfif",
     rating: 5,
     date: "2026-07-18T18:00:00Z",
     item_ordered: "Seafood Paella",
@@ -166,7 +166,7 @@ export const reviews = [
   {
     id: "rev_006",
     customer_name: "Kelechi Okafor",
-    avatar: "https://i.pravatar.cc/150?img=6",
+    avatar: "/images/150 (6).jfif",
     rating: 4,
     date: "2026-07-15T13:25:00Z",
     item_ordered: "Suya Platter",
@@ -175,7 +175,7 @@ export const reviews = [
   {
     id: "rev_007",
     customer_name: "Jessica Taylor",
-    avatar: "https://i.pravatar.cc/150?img=7",
+    avatar: "/images/150 (7).jfif",
     rating: 5,
     date: "2026-07-11T21:05:00Z",
     item_ordered: "Wood-fired Margherita Pizza",
@@ -184,7 +184,7 @@ export const reviews = [
   {
     id: "rev_008",
     customer_name: "Omar Al-Mansoor",
-    avatar: "https://i.pravatar.cc/150?img=8",
+    avatar: "/images/150 (8).jfif",
     rating: 2,
     date: "2026-07-08T19:50:00Z",
     item_ordered: "Lamb Shawarma Wrap",
@@ -193,7 +193,7 @@ export const reviews = [
   {
     id: "rev_009",
     customer_name: "Rachel Adams",
-    avatar: "https://i.pravatar.cc/150?img=9",
+    avatar: "/images/150 (9).jfif",
     rating: 5,
     date: "2026-07-05T15:40:00Z",
     item_ordered: "Matcha Cheesecake & Iced Latte",
@@ -202,7 +202,7 @@ export const reviews = [
   {
     id: "rev_010",
     customer_name: "Tunde Bakare",
-    avatar: "https://i.pravatar.cc/150?img=10",
+    avatar: "/images/150 (10).jfif0",
     rating: 4,
     date: "2026-07-01T17:15:00Z",
     item_ordered: "Peppered Goat Meat (Asun)",
