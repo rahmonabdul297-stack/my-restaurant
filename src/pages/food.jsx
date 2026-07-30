@@ -189,12 +189,15 @@ const FoodPage = () => {
 
     const tableId = await ensureTableExists();
 
+
+
+
     const payload = {
       order_id: `ord-${Date.now()}`,
       table_id: "6a4d70cb7dded9b94e630348",
-      order_date: new Date().toString(),
-      created_at: new Date().toString(),
-      updated_at: new Date().toString(),
+      order_date: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       customer_name: customerName.trim(),
       phone: customerPhone.trim(),
       address: customerAddress.trim(),

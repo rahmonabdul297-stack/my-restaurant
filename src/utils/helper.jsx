@@ -9,7 +9,11 @@ export const errorNotification=(message)=>{
 export const infoNotification=(message)=>{
     toast.info(message)
 }
-
+export const formatTimestamp = (value) => {
+  if (!value) return "—";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
+};
 export const currencyFormatter = (amount) => {
   const fmt = new Intl.NumberFormat("NGN", {
     style: "currency",

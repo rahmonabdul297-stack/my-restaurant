@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { GiCampfire, GiKnifeFork } from "react-icons/gi";
 import { MdOutlineLocalFlorist } from "react-icons/md";
 import { ThemeContext } from "../context/context";
+import Reviewcard from "./reviewcard";
 
 const pillars = [
   {
@@ -221,12 +222,12 @@ const AboutPage = () => {
             Ready when you are
           </p>
           <h3
-            className={`mt-4 font-black text-2xl md:text-3xl ${dark ? "text-AppWhite" : "text-AppBlack"}`}
+            className={`mt-4 font-black text-2xl md:text-3xl ${dark ? "text-AppWhite" : "text-AppCream"}`}
           >
             Pull up a chair—your table is waiting.
           </h3>
           <p
-            className={`mx-auto mt-3 max-w-lg text-sm ${dark ? "text-AppCream" : " text-AppBlack"}`}
+            className={`mx-auto mt-3 max-w-lg text-sm ${dark ? "text-AppCream" : " text-AppCream"}`}
           >
             Same palette you know from the site: deep charcoal, warm gray, and
             that signal red for moments that matter.
@@ -239,6 +240,10 @@ const AboutPage = () => {
           </Link>
         </div>
       </section>
+
+   <section className="py-10">
+      <Reviewcard />
+   </section>
     </div>
   );
 };

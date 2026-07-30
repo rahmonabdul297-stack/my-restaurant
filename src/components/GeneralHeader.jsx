@@ -98,7 +98,7 @@ export const GeneralHeader = () => {
               </Link>
             )}
           </div>
-          <div className=" relative">
+          <div className="relative">
             {" "}
             {navsArr.slice(3, 4).map((item) => (
               <Link
@@ -154,6 +154,7 @@ export const GeneralHeader = () => {
             </Link>
             <Link
               to="/adminlogin"
+              target="blank"
               className="px-1 py-1 w-full flex items-center gap-2 hover:bg-AppGray hover:text-AppCream rounded-lg"
             >
               <FaSignInAlt />
@@ -333,6 +334,7 @@ export const GeneralHeader = () => {
             </button>
             <Link
               to="/adminlogin"
+              target="blank"
               className="mt-2 flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold hover:bg-AppRed/10"
               onClick={handleMenuDrop}
             >

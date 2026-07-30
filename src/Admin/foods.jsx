@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import {
   errorNotification,
+  formatTimestamp,
   infoNotification,
   successNotification,
 } from "../utils/helper";
@@ -31,11 +32,7 @@ const readFileAsDataUrl = (file) =>
     reader.readAsDataURL(file);
   });
 
-const formatTimestamp = (value) => {
-  if (!value) return "—";
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
-};
+
 
 const Foods = () => {
   const { dark } = useContext(ThemeContext);

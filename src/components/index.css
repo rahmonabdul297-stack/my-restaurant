@@ -3,12 +3,7 @@
 /* Manual dark mode: `<html class="dark">` set from ThemeContext */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* @theme {
-  --color-AppRed: #ec190e;
-  --color-AppWhite: #eee;
-  --color-AppBlack: #444;
-  --color-AppGray: #aaa;
-} */
+
 
  @theme {
   --color-AppRed: #C99A2E;     
@@ -434,4 +429,17 @@ html[data-theme="dark"] body {
   .home-dots-row > * {
     animation: none !important;
   }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 1s  linear infinite;
 }
